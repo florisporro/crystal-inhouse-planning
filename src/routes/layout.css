@@ -4,7 +4,8 @@
 
 /* dataviz reference palette, light + dark */
 :root {
-	color-scheme: light dark;
+	color-scheme: light;
+	accent-color: var(--status-planned);
 	--page: #f9f9f7;
 	--surface: #fcfcfb;
 	--ink: #0b0b0b;
@@ -21,6 +22,7 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root {
+		color-scheme: dark;
 		--page: #0d0d0d;
 		--surface: #1a1a19;
 		--ink: #ffffff;
@@ -37,6 +39,19 @@
 body {
 	background: var(--page);
 	color: var(--ink);
+}
+
+/* form controls follow the mode; @tailwindcss/forms paints them white otherwise */
+input,
+select,
+textarea {
+	background-color: var(--surface);
+	color: var(--ink);
+	border-color: var(--grid);
+}
+::placeholder {
+	color: var(--muted);
+	opacity: 1;
 }
 
 /* apartment status boxes (tower view, legends, badges) */

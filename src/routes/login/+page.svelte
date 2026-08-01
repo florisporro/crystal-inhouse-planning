@@ -29,12 +29,12 @@
 					min="1"
 					max="179"
 					required
-					class="mt-1 w-full rounded border-gray-300"
+					class="mt-1 w-full rounded"
 				/>
 			</label>
 			<label class="block text-sm">
 				Email address
-				<input name="email" type="email" required class="mt-1 w-full rounded border-gray-300" />
+				<input name="email" type="email" required class="mt-1 w-full rounded" />
 			</label>
 			{#if form?.error}<p class="text-sm" style="color: var(--critical)">{form.error}</p>{/if}
 			<button

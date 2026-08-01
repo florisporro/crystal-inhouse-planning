@@ -29,7 +29,7 @@
 					min="1"
 					max="999"
 					required
-					class="w-24 rounded border-gray-300 text-sm"
+					class="w-24 rounded text-sm"
 				/>
 			</label>
 		{/each}
@@ -49,7 +49,7 @@
 	<form method="GET" action="/my" class="flex items-end gap-3 text-sm">
 		<label>
 			Apartment number
-			<input type="number" name="apartment" min="1" max="179" required class="mt-1 w-28 rounded border-gray-300 text-sm" />
+			<input type="number" name="apartment" min="1" max="179" required class="mt-1 w-28 rounded text-sm" />
 		</label>
 		<button class="rounded px-4 py-2 font-medium text-white" style="background: var(--status-planned)">
 			Open

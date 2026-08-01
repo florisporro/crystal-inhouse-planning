@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fmtDate, isoDate } from '$lib/viz';
+	import { fmtDate } from '$lib/viz';
 
 	let { data, form } = $props();
 
@@ -80,10 +80,10 @@
 						min="1"
 						max="179"
 						bind:value={apartment}
-						class="mt-1 w-28 rounded border-gray-300 text-sm"
+						class="mt-1 w-28 rounded text-sm"
 					/>
 				{:else}
-					<select bind:value={apartment} class="mt-1 w-28 rounded border-gray-300 text-sm">
+					<select bind:value={apartment} class="mt-1 w-28 rounded text-sm">
 						{#each data.numbers as n (n)}<option value={n}>{n}</option>{/each}
 					</select>
 				{/if}
@@ -108,13 +108,7 @@
 	{:else if step === 2}
 		<label class="mb-4 block text-sm">
 			Which day?
-			<input
-				type="date"
-				bind:value={date}
-				min={isoDate(0)}
-				required
-				class="mt-1 block rounded border-gray-300"
-			/>
+			<input type="date" bind:value={date} required class="mt-1 block rounded" />
 		</label>
 		<p class="mb-2 text-sm" style="color: var(--ink-2)">Which part of the day?</p>
 		<div class="space-y-3">
@@ -159,7 +153,7 @@
 					bind:value={note}
 					maxlength="200"
 					placeholder="e.g. crane at the front entrance"
-					class="mt-1 w-full rounded border-gray-300 text-sm"
+					class="mt-1 w-full rounded text-sm"
 				/>
 			</label>
 			{#if form?.error}<p class="mb-3 text-sm" style="color: var(--critical)">{form.error}</p>{/if}

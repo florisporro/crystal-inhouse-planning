@@ -1,6 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
+import { inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import { activities } from '$lib/server/db/schema';
+import { activities, apartments } from '$lib/server/db/schema';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
 import { ISO_DATE, activityFields } from '$lib/server/activityForm';
 
@@ -9,6 +10,15 @@ export const load = async ({ locals, url }) => {
 	const numbers = await apartmentNumbersForEmail(locals.user.email);
 	const admin = isAdmin(locals.user.email);
 	if (numbers.length === 0 && !admin) redirect(302, '/my');
+
+	if (!admin && numbers.length > 0) {
+		// first things first: pick a move-in status before announcing anything
+		const apts = await db
+			.select({ status: apartments.status })
+			.from(apartments)
+			.where(inArray(apartments.number, numbers));
+		if (apts.every((a) => a.status === 'no_data')) redirect(302, '/my');
+	}
 
 	const dateParam = url.searchParams.get('date') ?? '';
 	const aptParam = Number(url.searchParams.get('apartment'));
