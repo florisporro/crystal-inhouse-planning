@@ -5,6 +5,7 @@ import { activities, apartments } from '$lib/server/db/schema';
 import { auth } from '$lib/server/auth';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
 import { activityFields } from '$lib/server/activityForm';
+import { effectiveStatus } from '$lib/viz';
 
 const requireUser = (locals: App.Locals) => {
 	if (!locals.user) redirect(302, '/login');
@@ -42,7 +43,9 @@ export const load = async ({ locals, url }) => {
 		apartments: apts.map((a) => ({
 			number: a.number,
 			floor: a.floor,
-			status: a.status,
+			// a past planned move reads as moved in here too, so the resident's own
+			// page agrees with the public views
+			status: effectiveStatus(a.status, a.plannedMoveDate),
 			plannedMoveDate: a.plannedMoveDate,
 			acts: acts.filter((x) => x.apartmentNumber === a.number)
 		}))

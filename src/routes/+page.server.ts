@@ -24,7 +24,11 @@ async function actsBetween(start: string, end: string) {
 
 export const load = async ({ url }) => {
 	const apts = await db
-		.select({ unsold: apartments.unsold, status: apartments.status })
+		.select({
+			unsold: apartments.unsold,
+			status: apartments.status,
+			plannedMoveDate: apartments.plannedMoveDate
+		})
 		.from(apartments);
 	const stats: Record<DisplayStatus, number> = {
 		moved_in: 0,

@@ -19,8 +19,19 @@ export const RESIDENT_STATUSES = [
 
 export type DisplayStatus = (typeof STATUSES)[number]['key'];
 
-export function displayStatus(a: { unsold: boolean; status: string }): DisplayStatus {
-	return a.unsold ? 'not_sold' : (a.status as DisplayStatus);
+/** a planned move whose date has passed counts as moved in — no stale "planned" */
+export function effectiveStatus(status: string, plannedMoveDate: string | null): string {
+	return status === 'planned' && plannedMoveDate && plannedMoveDate < isoDate(0)
+		? 'moved_in'
+		: status;
+}
+
+export function displayStatus(a: {
+	unsold: boolean;
+	status: string;
+	plannedMoveDate: string | null;
+}): DisplayStatus {
+	return a.unsold ? 'not_sold' : (effectiveStatus(a.status, a.plannedMoveDate) as DisplayStatus);
 }
 
 // sequential blue ramp (reference palette), light -> dark with magnitude

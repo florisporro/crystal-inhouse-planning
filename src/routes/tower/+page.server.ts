@@ -9,7 +9,8 @@ export const load = async () => {
 			number: apartments.number,
 			floor: apartments.floor,
 			unsold: apartments.unsold,
-			status: apartments.status
+			status: apartments.status,
+			plannedMoveDate: apartments.plannedMoveDate
 		})
 		.from(apartments)
 		.orderBy(asc(apartments.number));
