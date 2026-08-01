@@ -1,0 +1,14 @@
+node_modules
+apartment-emails.csv
+.svelte-kit
+build
+data
+*.db
+.env
+.env.*
+!.env.example
+.git
+.vscode
+.claude
+test-results
+.DS_Store

@@ -1,0 +1,56 @@
+export const STATUSES = [
+	{ key: 'moved_in', label: 'Moved in' },
+	{ key: 'planned', label: 'Move planned' },
+	{ key: 'no_move_planned', label: 'No move planned yet' },
+	{ key: 'no_data', label: 'No response' },
+	{ key: 'not_sold', label: 'Not sold' }
+] as const;
+
+// what residents may set themselves; 'no_data' (never responded) is admin-only
+export const RESIDENT_STATUSES = [
+	{
+		key: 'no_move_planned',
+		label: 'No move planned yet',
+		hint: 'We have the apartment, but no moving date in sight.'
+	},
+	{ key: 'planned', label: 'Move planned', hint: 'We know roughly when we want to move in.' },
+	{ key: 'moved_in', label: 'Fully moved in', hint: 'We live here — the move is done.' }
+] as const;
+
+export type DisplayStatus = (typeof STATUSES)[number]['key'];
+
+export function displayStatus(a: { unsold: boolean; status: string }): DisplayStatus {
+	return a.unsold ? 'not_sold' : (a.status as DisplayStatus);
+}
+
+// sequential blue ramp (reference palette), light -> dark with magnitude
+const HEAT_RAMP = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b'];
+
+/** public wording for a busyness level; resource internals stay backend-only */
+export function busyLabel(load: number): string {
+	if (load <= 0) return 'No activity';
+	if (load < 0.5) return 'Quiet';
+	if (load < 0.8) return 'Moderate';
+	if (load <= 1) return 'Busy';
+	return 'Very busy';
+}
+
+/** null for zero load (cell recedes to the surface) */
+export function heatColor(load: number): string | null {
+	if (load <= 0) return null;
+	return HEAT_RAMP[Math.min(HEAT_RAMP.length - 1, Math.floor(load * HEAT_RAMP.length))];
+}
+
+export function isoDate(offsetDays = 0): string {
+	const d = new Date();
+	d.setDate(d.getDate() + offsetDays);
+	return d.toLocaleDateString('sv'); // yyyy-mm-dd in local time
+}
+
+export function fmtDate(iso: string): string {
+	return new Date(iso + 'T12:00').toLocaleDateString('en-GB', {
+		weekday: 'short',
+		day: 'numeric',
+		month: 'short'
+	});
+}

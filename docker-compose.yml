@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    # .env on the server provides ORIGIN, BETTER_AUTH_SECRET, POSTMARK_TOKEN, POSTMARK_FROM
+    env_file: .env
+    environment:
+      DATABASE_URL: file:/data/local.db
+    volumes:
+      - ./data:/data
