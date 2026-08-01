@@ -7,6 +7,17 @@
 		{ key: 'truckSpaces', label: 'Truck or large-van spaces (moving, deliveries)' },
 		{ key: 'vanSpaces', label: 'Small-van spaces (other activities)' }
 	] as const;
+
+	const costTypes = [
+		{ key: 'moving', label: 'Moving' },
+		{ key: 'delivery', label: 'Delivery' },
+		{ key: 'other', label: 'Other activity' }
+	] as const;
+	const costResources = [
+		{ key: 'truck', label: 'Truck spaces' },
+		{ key: 'van', label: 'Van spaces' },
+		{ key: 'elevator', label: 'Elevator use' }
+	] as const;
 </script>
 
 <svelte:head><title>Admin — Crystal Tower</title></svelte:head>
@@ -37,6 +48,52 @@
 		{#if form?.saved}<p style="color: var(--status-moved)">Saved.</p>{/if}
 		<button class="rounded px-4 py-2 font-medium text-white" style="background: var(--status-planned)">
 			Save capacity
+		</button>
+	</form>
+</section>
+
+<section class="mb-8 max-w-md rounded border p-4" style="border-color: var(--hairline); background: var(--surface)">
+	<h2 class="mb-1 font-medium">Activity load</h2>
+	<p class="mb-3 text-sm" style="color: var(--muted)">
+		How much one activity of each type weighs on the resources above. Indicative weights only —
+		nothing is blocked.
+	</p>
+	<form method="POST" action="?/saveCosts" class="space-y-3 text-sm">
+		<table class="w-full">
+			<thead>
+				<tr>
+					<th></th>
+					{#each costResources as r (r.key)}
+						<th class="pb-1 text-right font-normal" style="color: var(--muted)">{r.label}</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each costTypes as t (t.key)}
+					<tr>
+						<td class="py-1">{t.label}</td>
+						{#each costResources as r (r.key)}
+							<td class="py-1 text-right">
+								<input
+									type="number"
+									name="{t.key}.{r.key}"
+									value={data.costs[t.key][r.key]}
+									min="0"
+									max="99"
+									step="0.1"
+									required
+									class="w-20 rounded text-sm"
+								/>
+							</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+		{#if form?.costError}<p style="color: var(--critical)">{form.costError}</p>{/if}
+		{#if form?.costsSaved}<p style="color: var(--status-moved)">Saved.</p>{/if}
+		<button class="rounded px-4 py-2 font-medium text-white" style="background: var(--status-planned)">
+			Save activity load
 		</button>
 	</form>
 </section>

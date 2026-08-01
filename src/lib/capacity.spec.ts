@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blockLoad } from './capacity';
+import { blockLoad, DEFAULT_CAPACITY, DEFAULT_COSTS } from './capacity';
 
 describe('blockLoad', () => {
 	it('computes resource footprints and flags overload', () => {
@@ -47,5 +47,23 @@ describe('blockLoad', () => {
 
 	it('is zero for no activities', () => {
 		expect(blockLoad([], 'morning').load).toBe(0);
+	});
+
+	it('applies custom per-type costs', () => {
+		const costs = {
+			...DEFAULT_COSTS,
+			delivery: { truck: 0, van: 1, elevator: 0.25 }
+		};
+		const acts = [
+			{ type: 'delivery', block: 'morning', floor: 5 },
+			{ type: 'delivery', block: 'morning', floor: 20 },
+			{ type: 'moving', block: 'morning', floor: 5 }
+		] as const;
+		const l = blockLoad([...acts], 'morning', DEFAULT_CAPACITY, costs);
+		expect(l.count).toBe(3);
+		expect(l.trucks).toBe(1); // only the move
+		expect(l.vans).toBe(2); // deliveries rerouted to vans
+		expect(l.lowElevators).toBe(1.25);
+		expect(l.highElevators).toBe(0.25);
 	});
 });

@@ -1,7 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { isAdmin } from '$lib/server/access';
-import { getCapacity, setCapacity } from '$lib/server/capacity';
-import type { Capacity } from '$lib/capacity';
+import { getCapacity, getCosts, setCapacity, setCosts } from '$lib/server/capacity';
+import { DEFAULT_COSTS, type Capacity, type Costs } from '$lib/capacity';
 
 const requireAdmin = (locals: App.Locals) => {
 	if (!locals.user) redirect(302, '/login');
@@ -10,7 +10,7 @@ const requireAdmin = (locals: App.Locals) => {
 
 export const load = async ({ locals }) => {
 	requireAdmin(locals);
-	return { capacity: await getCapacity() };
+	return { capacity: await getCapacity(), costs: await getCosts() };
 };
 
 export const actions = {
@@ -30,5 +30,21 @@ export const actions = {
 		}
 		await setCapacity(cap);
 		return { saved: true };
+	},
+	saveCosts: async ({ locals, request }) => {
+		requireAdmin(locals);
+		const form = await request.formData();
+		const costs = structuredClone(DEFAULT_COSTS);
+		for (const type of Object.keys(costs) as (keyof Costs)[]) {
+			for (const resource of ['truck', 'van', 'elevator'] as const) {
+				const n = Number(form.get(`${type}.${resource}`));
+				if (!Number.isFinite(n) || n < 0 || n > 99) {
+					return fail(400, { costError: 'Activity loads must be numbers between 0 and 99.' });
+				}
+				costs[type][resource] = n;
+			}
+		}
+		await setCosts(costs);
+		return { costsSaved: true };
 	}
 };

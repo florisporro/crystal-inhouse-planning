@@ -2,7 +2,7 @@ import { and, asc, between, eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { publicLoad } from '$lib/capacity';
-import { getCapacity } from '$lib/server/capacity';
+import { getCapacity, getCosts } from '$lib/server/capacity';
 import { displayStatus, isoDate, type DisplayStatus } from '$lib/viz';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -51,13 +51,14 @@ export const load = async ({ url }) => {
 
 	const acts = await actsBetween(`${month}-01`, `${month}-${pad(daysInMonth)}`);
 	const cap = await getCapacity();
+	const costs = await getCosts();
 	const days = Array.from({ length: daysInMonth }, (_, i) => {
 		const date = `${month}-${pad(i + 1)}`;
 		const dayActs = acts.filter((a) => a.date === date);
 		return {
 			date,
-			morning: publicLoad(dayActs, 'morning', cap),
-			afternoon: publicLoad(dayActs, 'afternoon', cap)
+			morning: publicLoad(dayActs, 'morning', cap, costs),
+			afternoon: publicLoad(dayActs, 'afternoon', cap, costs)
 		};
 	});
 

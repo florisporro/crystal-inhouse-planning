@@ -3,7 +3,7 @@ import { and, asc, eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { publicLoad } from '$lib/capacity';
-import { getCapacity } from '$lib/server/capacity';
+import { getCapacity, getCosts } from '$lib/server/capacity';
 
 export const load = async ({ params }) => {
 	if (!/^\d{4}-\d{2}-\d{2}$/.test(params.date)) error(404, 'Not a date');
@@ -23,10 +23,11 @@ export const load = async ({ params }) => {
 		.orderBy(asc(activities.block), asc(activities.apartmentNumber));
 
 	const cap = await getCapacity();
+	const costs = await getCosts();
 	return {
 		date: params.date,
 		acts,
-		morning: publicLoad(acts, 'morning', cap),
-		afternoon: publicLoad(acts, 'afternoon', cap)
+		morning: publicLoad(acts, 'morning', cap, costs),
+		afternoon: publicLoad(acts, 'afternoon', cap, costs)
 	};
 };
