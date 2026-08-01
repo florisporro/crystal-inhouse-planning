@@ -164,7 +164,7 @@
 					name="note"
 					bind:value={note}
 					maxlength="200"
-					placeholder="e.g. crane at the front entrance"
+					placeholder="e.g. piano coming up the stairwell, wish us luck"
 					class="mt-1 w-full rounded text-sm"
 				/>
 			</label>
