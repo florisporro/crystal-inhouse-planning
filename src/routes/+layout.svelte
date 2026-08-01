@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import Logo from '$lib/Logo.svelte';
 
 	let { children, data } = $props();
 </script>
@@ -8,8 +9,11 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <header class="border-b" style="border-color: var(--hairline); background: var(--surface)">
-	<div class="mx-auto flex max-w-5xl items-baseline gap-6 px-4 py-3">
-		<a href="/" class="font-semibold">Crystal Tower</a>
+	<div class="mx-auto flex max-w-5xl items-center gap-6 px-4 py-3">
+		<a href="/" class="flex items-center gap-2 font-semibold">
+			<Logo class="h-9 w-9" />
+			Crystal Tower
+		</a>
 		<nav class="flex gap-4 text-sm" style="color: var(--ink-2)">
 			<a href="/" class="hover:underline">Overview</a>
 			<a href="/tower" class="hover:underline">Tower</a>
