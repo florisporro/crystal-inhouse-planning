@@ -146,6 +146,18 @@
 					{fmtDate(date)}, {blockLabel.toLowerCase()}
 				</p>
 			</div>
+			{#if type === 'moving'}
+				<label class="mb-4 flex items-start gap-2 text-sm">
+					<input type="checkbox" name="movedAfter" checked class="mt-0.5 rounded" />
+					<span>
+						We are fully moved in after this move
+						<span class="block text-xs" style="color: var(--muted)">
+							This sets your apartment's status to “Move planned” for {fmtDate(date)} (or “Moved
+							in” if the date has passed).
+						</span>
+					</span>
+				</label>
+			{/if}
 			<label class="mb-4 block text-sm">
 				Anything the neighbours should know? <span style="color: var(--muted)">(optional)</span>
 				<input

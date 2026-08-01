@@ -98,7 +98,20 @@
 					<span class="font-medium" style="color: var(--status-moved)">Saved ✓</span>
 				{/if}
 			</p>
-			<div class="grid gap-2 sm:grid-cols-3">
+			{#if apt.status === 'planned'}
+				<div class="mb-2 rounded-lg border-2 p-3" style="border-color: var(--status-planned)">
+					<span class="flex items-center gap-2 font-medium">
+						<span class="h-3 w-3 shrink-0 rounded-full" style="background: var(--status-planned)"
+						></span>
+						Move planned{#if apt.plannedMoveDate}&nbsp;— {fmtDate(apt.plannedMoveDate)}{/if}
+					</span>
+					<span class="mt-1 block text-xs" style="color: var(--muted)">
+						Set by your moving activity below — adjust or cancel it there, or pick a status here to
+						override.
+					</span>
+				</div>
+			{/if}
+			<div class="grid gap-2 sm:grid-cols-2">
 				{#each RESIDENT_STATUSES as s (s.key)}
 					{@const active = apt.status === s.key}
 					<label
@@ -129,18 +142,6 @@
 					</label>
 				{/each}
 			</div>
-			{#if apt.status === 'planned'}
-				<label class="mt-3 block text-sm">
-					When do you plan to move in?
-					<input
-						type="date"
-						name="plannedMoveDate"
-						value={apt.plannedMoveDate ?? ''}
-						class="{inputClass} block"
-						onchange={(e) => e.currentTarget.form?.requestSubmit()}
-					/>
-				</label>
-			{/if}
 			{#if data.admin && apt.status !== 'no_data'}
 				<button
 					name="status"

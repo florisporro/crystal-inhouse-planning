@@ -1,5 +1,5 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
@@ -39,6 +39,19 @@ export const actions = {
 		const fields = activityFields(form);
 		if (!fields) return fail(400, { error: 'Please pick an activity type, date and time.' });
 		await db.insert(activities).values({ apartmentNumber: apartment, ...fields });
+
+		// the moving activity is the single source of the "move planned" status
+		if (fields.type === 'moving' && form.get('movedAfter')) {
+			const inPast = fields.date < new Date().toLocaleDateString('sv');
+			await db
+				.update(apartments)
+				.set(
+					inPast
+						? { status: 'moved_in', plannedMoveDate: null }
+						: { status: 'planned', plannedMoveDate: fields.date }
+				)
+				.where(eq(apartments.number, apartment));
+		}
 		redirect(303, '/my');
 	}
 };

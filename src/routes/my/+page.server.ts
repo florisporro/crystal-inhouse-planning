@@ -4,7 +4,7 @@ import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { auth } from '$lib/server/auth';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
-import { ISO_DATE, activityFields } from '$lib/server/activityForm';
+import { activityFields } from '$lib/server/activityForm';
 
 const requireUser = (locals: App.Locals) => {
 	if (!locals.user) redirect(302, '/login');
@@ -49,13 +49,24 @@ export const load = async ({ locals, url }) => {
 	};
 };
 
-const RESIDENT_SET = ['no_move_planned', 'planned', 'moved_in'];
+// 'planned' is not settable here — only announcing a moving activity sets it
+const RESIDENT_SET = ['no_move_planned', 'moved_in'];
 
 async function checkedApartment(locals: App.Locals, form: FormData): Promise<number> {
 	const user = requireUser(locals);
 	const apartment = Number(form.get('apartment'));
 	if (!(await canEdit(user.email, apartment))) error(403, 'Not your apartment');
 	return apartment;
+}
+
+// was this activity the moving that set the apartment's "move planned" status?
+async function wasPlannedMove(act: { type: string; date: string; apartmentNumber: number }) {
+	if (act.type !== 'moving') return false;
+	const [apt] = await db
+		.select({ status: apartments.status, plannedMoveDate: apartments.plannedMoveDate })
+		.from(apartments)
+		.where(eq(apartments.number, act.apartmentNumber));
+	return apt?.status === 'planned' && apt.plannedMoveDate === act.date;
 }
 
 async function checkedActivity(locals: App.Locals, form: FormData) {
@@ -72,18 +83,12 @@ export const actions = {
 		const form = await request.formData();
 		const apartment = await checkedApartment(locals, form);
 		const status = form.get('status')?.toString() ?? '';
-		const planned = form.get('plannedMoveDate')?.toString() ?? '';
-		// residents pick one of the three real statuses; only admins may reset to
-		// no_data ("never responded")
+		// only admins may reset to no_data ("never responded")
 		const allowed = isAdmin(locals.user!.email) ? [...RESIDENT_SET, 'no_data'] : RESIDENT_SET;
 		if (!allowed.includes(status)) return fail(400, { error: 'Invalid status' });
-		if (planned && !ISO_DATE.test(planned)) return fail(400, { error: 'Invalid date' });
 		await db
 			.update(apartments)
-			.set({
-				status: status as 'no_data' | 'no_move_planned' | 'planned' | 'moved_in',
-				plannedMoveDate: status === 'planned' && planned ? planned : null
-			})
+			.set({ status: status as 'no_data' | 'no_move_planned' | 'moved_in', plannedMoveDate: null })
 			.where(eq(apartments.number, apartment));
 	},
 
@@ -96,6 +101,17 @@ export const actions = {
 			.update(activities)
 			.set({ ...fields, updatedAt: new Date() })
 			.where(eq(activities.id, act.id));
+		// keep the planned-move status in sync when this was the status-setting move
+		if (await wasPlannedMove(act)) {
+			await db
+				.update(apartments)
+				.set(
+					fields.type === 'moving'
+						? { plannedMoveDate: fields.date }
+						: { status: 'no_move_planned', plannedMoveDate: null }
+				)
+				.where(eq(apartments.number, act.apartmentNumber));
+		}
 	},
 
 	cancel: async ({ locals, request }) => {
@@ -104,6 +120,13 @@ export const actions = {
 			.update(activities)
 			.set({ status: 'cancelled', updatedAt: new Date() })
 			.where(eq(activities.id, act.id));
+		// no dangling "move planned" after its moving activity is cancelled
+		if (await wasPlannedMove(act)) {
+			await db
+				.update(apartments)
+				.set({ status: 'no_move_planned', plannedMoveDate: null })
+				.where(eq(apartments.number, act.apartmentNumber));
+		}
 	},
 
 	signout: async ({ request }) => {
