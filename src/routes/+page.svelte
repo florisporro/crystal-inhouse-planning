@@ -30,13 +30,7 @@
 			See how busy the building is, and announce your own move, delivery or works.
 		</p>
 	</div>
-	<a
-		href="/announce"
-		class="rounded px-4 py-2 text-sm font-medium text-white"
-		style="background: var(--status-planned)"
-	>
-		+ Announce an activity
-	</a>
+	<a href="/announce" class="btn-primary px-4 py-2 text-sm">+ Announce an activity</a>
 </div>
 
 <section class="mb-8">
@@ -156,9 +150,9 @@
 			<h3 class="mt-4 mb-1 text-sm font-medium">
 				<a href="/day/{date}" class="hover:underline">{fmtDate(date)}</a>
 			</h3>
-			<ul class="divide-y rounded border" style="border-color: var(--hairline)">
+			<ul class="list">
 				{#each data.upcoming.filter((a) => a.date === date) as a (a)}
-					<li class="flex gap-4 px-3 py-1.5 text-sm" style="border-color: var(--hairline)">
+					<li class="flex gap-4 px-3 py-1.5 text-sm">
 						<a href="/apartment/{a.apartmentNumber}" class="w-16 font-medium hover:underline"
 							>№ {a.apartmentNumber}</a
 						>

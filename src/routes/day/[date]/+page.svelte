@@ -14,11 +14,7 @@
 
 <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
 	<h1 class="text-xl font-semibold">{fmtDate(data.date)}</h1>
-	<a
-		href="/announce?date={data.date}"
-		class="rounded px-4 py-2 text-sm font-medium text-white"
-		style="background: var(--status-planned)"
-	>
+	<a href="/announce?date={data.date}" class="btn-primary px-4 py-2 text-sm">
 		+ Announce activity on this day
 	</a>
 </div>
@@ -27,10 +23,7 @@
 	{#each BLOCKS as block (block.key)}
 		{@const l = loads[block.key]}
 		{@const count = l.count}
-		<section
-			class="rounded border p-4"
-			style="border-color: var(--hairline); background: var(--surface)"
-		>
+		<section class="card">
 			<h2 class="font-medium">
 				{block.label} <span class="text-sm" style="color: var(--muted)">{block.hours}</span>
 			</h2>
@@ -62,9 +55,9 @@
 	{#if data.acts.length === 0}
 		<p class="text-sm" style="color: var(--muted)">Nothing announced for this day.</p>
 	{:else}
-		<ul class="divide-y rounded border" style="border-color: var(--hairline)">
+		<ul class="list">
 			{#each data.acts as a (a.id)}
-				<li class="flex flex-wrap gap-4 px-3 py-1.5 text-sm" style="border-color: var(--hairline)">
+				<li class="flex flex-wrap gap-4 px-3 py-1.5 text-sm">
 					<a href="/apartment/{a.apartmentNumber}" class="w-16 font-medium hover:underline"
 						>№ {a.apartmentNumber}</a
 					>

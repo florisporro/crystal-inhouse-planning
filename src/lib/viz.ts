@@ -39,8 +39,8 @@ export function displayStatus(a: {
 	return a.unsold ? 'not_sold' : (effectiveStatus(a.status, a.plannedMoveDate) as DisplayStatus);
 }
 
-// sequential blue ramp (reference palette), light -> dark with magnitude
-const HEAT_RAMP = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b'];
+// sequential blue ramp; hexes live in layout.css so dark mode can reverse it
+const HEAT_RAMP = [1, 2, 3, 4, 5, 6, 7].map((n) => `var(--heat-${n})`);
 
 /** public wording for a busyness level; resource internals stay backend-only */
 export function busyLabel(load: number): string {

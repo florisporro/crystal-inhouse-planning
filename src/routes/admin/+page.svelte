@@ -24,10 +24,7 @@
 
 <h1 class="mb-6 text-xl font-semibold">Admin</h1>
 
-<section
-	class="mb-8 max-w-md rounded border p-4"
-	style="border-color: var(--hairline); background: var(--surface)"
->
+<section class="card mb-8 max-w-md">
 	<h2 class="mb-1 font-medium">Indicative capacity</h2>
 	<p class="mb-3 text-sm" style="color: var(--muted)">
 		Used for busyness colors and warnings only — registrations are never blocked.
@@ -49,19 +46,11 @@
 		{/each}
 		{#if form?.error}<p style="color: var(--critical)">{form.error}</p>{/if}
 		{#if form?.saved}<p style="color: var(--status-moved)">Saved.</p>{/if}
-		<button
-			class="rounded px-4 py-2 font-medium text-white"
-			style="background: var(--status-planned)"
-		>
-			Save capacity
-		</button>
+		<button class="btn-primary px-4 py-2">Save capacity</button>
 	</form>
 </section>
 
-<section
-	class="mb-8 max-w-md rounded border p-4"
-	style="border-color: var(--hairline); background: var(--surface)"
->
+<section class="card mb-8 max-w-md">
 	<h2 class="mb-1 font-medium">Activity load</h2>
 	<p class="mb-3 text-sm" style="color: var(--muted)">
 		How much one activity of each type weighs on the resources above. Indicative weights only —
@@ -101,19 +90,11 @@
 		</table>
 		{#if form?.costError}<p style="color: var(--critical)">{form.costError}</p>{/if}
 		{#if form?.costsSaved}<p style="color: var(--status-moved)">Saved.</p>{/if}
-		<button
-			class="rounded px-4 py-2 font-medium text-white"
-			style="background: var(--status-planned)"
-		>
-			Save activity load
-		</button>
+		<button class="btn-primary px-4 py-2">Save activity load</button>
 	</form>
 </section>
 
-<section
-	class="mb-8 max-w-md rounded border p-4"
-	style="border-color: var(--hairline); background: var(--surface)"
->
+<section class="card mb-8 max-w-md">
 	<h2 class="mb-1 font-medium">Login emails</h2>
 	<p class="mb-3 text-sm" style="color: var(--muted)">
 		Which addresses may log in for an apartment. Changes are written back to the email CSV on the
@@ -132,20 +113,12 @@
 				class="mt-1 w-28 rounded text-sm"
 			/>
 		</label>
-		<button
-			class="rounded px-4 py-2 font-medium text-white"
-			style="background: var(--status-planned)"
-		>
-			Show
-		</button>
+		<button class="btn-primary px-4 py-2">Show</button>
 	</form>
 	{#if data.emailApartment}
-		<ul class="mb-3 divide-y rounded border text-sm" style="border-color: var(--hairline)">
+		<ul class="list mb-3 text-sm">
 			{#each data.emails as e (e)}
-				<li
-					class="flex items-center justify-between gap-3 px-3 py-1.5"
-					style="border-color: var(--hairline)"
-				>
+				<li class="flex items-center justify-between gap-3 px-3 py-1.5">
 					<span class="break-all">{e}</span>
 					<form method="POST" action="?/removeEmail">
 						<input type="hidden" name="apartment" value={data.emailApartment} />
@@ -168,12 +141,7 @@
 				placeholder="resident@example.com"
 				class="w-full rounded text-sm"
 			/>
-			<button
-				class="rounded px-4 py-2 font-medium text-white"
-				style="background: var(--status-planned)"
-			>
-				Add
-			</button>
+			<button class="btn-primary px-4 py-2">Add</button>
 		</form>
 		{#if form?.emailError}<p class="mt-2 text-sm" style="color: var(--critical)">
 				{form.emailError}
@@ -181,10 +149,7 @@
 	{/if}
 </section>
 
-<section
-	class="max-w-md rounded border p-4"
-	style="border-color: var(--hairline); background: var(--surface)"
->
+<section class="card max-w-md">
 	<h2 class="mb-1 font-medium">Manage an apartment</h2>
 	<p class="mb-3 text-sm" style="color: var(--muted)">
 		Opens the same editor residents use, for any apartment.
@@ -201,11 +166,6 @@
 				class="mt-1 w-28 rounded text-sm"
 			/>
 		</label>
-		<button
-			class="rounded px-4 py-2 font-medium text-white"
-			style="background: var(--status-planned)"
-		>
-			Open
-		</button>
+		<button class="btn-primary px-4 py-2">Open</button>
 	</form>
 </section>

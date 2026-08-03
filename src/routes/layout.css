@@ -19,6 +19,15 @@
 	--status-nodata: #e1e0d9;
 	--status-unsold: #52514e;
 	--critical: #d03b3b;
+	--shadow-1: 0 1px 2px rgba(11, 11, 11, 0.06), 0 2px 8px rgba(11, 11, 11, 0.04);
+	/* sequential blue heat ramp, low -> high load */
+	--heat-1: #cde2fb;
+	--heat-2: #9ec5f4;
+	--heat-3: #6da7ec;
+	--heat-4: #3987e5;
+	--heat-5: #256abf;
+	--heat-6: #184f95;
+	--heat-7: #0d366b;
 }
 @media (prefers-color-scheme: dark) {
 	:root {
@@ -33,12 +42,69 @@
 		--status-noplan: #c98500;
 		--status-nodata: #2c2c2a;
 		--status-unsold: #4a4946;
+		--shadow-1: none;
+		/* ramp reversed: low load recedes into the dark page, high load brightens */
+		--heat-1: #0d366b;
+		--heat-2: #184f95;
+		--heat-3: #256abf;
+		--heat-4: #3987e5;
+		--heat-5: #6da7ec;
+		--heat-6: #9ec5f4;
+		--heat-7: #cde2fb;
 	}
 }
 
 body {
 	background: var(--page);
 	color: var(--ink);
+}
+
+h1,
+h2 {
+	letter-spacing: -0.015em;
+}
+:focus-visible {
+	outline: 2px solid var(--status-planned);
+	outline-offset: 2px;
+}
+a,
+button,
+summary {
+	transition:
+		background-color 0.15s,
+		color 0.15s,
+		border-color 0.15s,
+		box-shadow 0.15s;
+}
+
+/* shared recipes; layered so call-site utilities still win */
+@layer components {
+	.card {
+		background: var(--surface);
+		border: 1px solid var(--hairline);
+		border-radius: 0.5rem;
+		padding: 1rem;
+		box-shadow: var(--shadow-1);
+	}
+	.btn-primary {
+		background: var(--status-planned);
+		color: #fff;
+		font-weight: 500;
+		border-radius: 0.5rem;
+	}
+	.btn-primary:hover {
+		background: color-mix(in srgb, var(--status-planned) 85%, black);
+	}
+	.list {
+		background: var(--surface);
+		border: 1px solid var(--hairline);
+		border-radius: 0.5rem;
+		box-shadow: var(--shadow-1);
+		font-variant-numeric: tabular-nums;
+	}
+	.list > :not(:last-child) {
+		border-bottom: 1px solid var(--hairline);
+	}
 }
 
 /* form controls follow the mode; @tailwindcss/forms paints them white otherwise.

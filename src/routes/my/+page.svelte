@@ -64,21 +64,14 @@
 
 {#each data.apartments as apt (apt.number)}
 	{@const needsStatus = apt.status === 'no_data' && !data.admin}
-	<section
-		class="mb-8 rounded border p-4"
-		style="border-color: var(--hairline); background: var(--surface)"
-	>
+	<section class="card mb-8">
 		<div class="mb-4 flex flex-wrap items-baseline justify-between gap-2">
 			<h2 class="font-semibold">
 				Apartment {apt.number}
 				<span class="text-sm font-normal" style="color: var(--muted)">floor {apt.floor}</span>
 			</h2>
 			{#if !needsStatus}
-				<a
-					href="/announce?apartment={apt.number}"
-					class="rounded px-4 py-2 text-sm font-medium text-white"
-					style="background: var(--status-planned)"
-				>
+				<a href="/announce?apartment={apt.number}" class="btn-primary px-4 py-2 text-sm">
 					+ Announce activity
 				</a>
 			{/if}
@@ -163,9 +156,9 @@
 					Nothing announced yet — use “Announce activity” above to add your move or delivery.
 				</p>
 			{:else}
-				<ul class="divide-y rounded border" style="border-color: var(--hairline)">
+				<ul class="list">
 					{#each apt.acts as a (a.id)}
-						<li class="px-3 py-2 text-sm" style="border-color: var(--hairline)">
+						<li class="px-3 py-2 text-sm">
 							<div
 								class="flex flex-wrap items-center gap-3 {a.status === 'cancelled'
 									? 'line-through opacity-50'
@@ -220,12 +213,7 @@
 													class={inputClass}
 												/>
 											</label>
-											<button
-												class="rounded px-3 py-1.5 text-xs font-medium text-white"
-												style="background: var(--status-planned)"
-											>
-												Save
-											</button>
+											<button class="btn-primary px-3 py-1.5 text-xs">Save</button>
 										</form>
 									</details>
 									<form method="POST" action="?/cancel">

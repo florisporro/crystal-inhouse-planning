@@ -62,9 +62,7 @@
 				? Math.max(dayBusy.morning, dayBusy.afternoon)
 				: dayBusy[key as 'morning' | 'afternoon'];
 
-	const cardClass =
-		'block w-full rounded-lg border p-4 text-left transition hover:opacity-90 cursor-pointer';
-	const cardStyle = 'border-color: var(--hairline); background: var(--surface)';
+	const cardClass = 'card block w-full text-left transition hover:opacity-90 cursor-pointer';
 </script>
 
 <svelte:head><title>Announce an activity — Crystal Tower</title></svelte:head>
@@ -109,7 +107,6 @@
 				<button
 					type="button"
 					class={cardClass}
-					style={cardStyle}
 					onclick={() => {
 						type = t.key;
 						step = 2;
@@ -131,7 +128,6 @@
 				<button
 					type="button"
 					class="{cardClass} disabled:opacity-40"
-					style={cardStyle}
 					disabled={!date}
 					onclick={() => {
 						block = b.key;
@@ -168,7 +164,7 @@
 			<input type="hidden" name="type" value={type} />
 			<input type="hidden" name="date" value={date} />
 			<input type="hidden" name="block" value={block} />
-			<div class="mb-4 rounded-lg border p-4" style={cardStyle}>
+			<div class="card mb-4">
 				<p class="font-medium">
 					{typeLabel} — apartment {apartment}
 				</p>
@@ -200,13 +196,7 @@
 			</label>
 			{#if form?.error}<p class="mb-3 text-sm" style="color: var(--critical)">{form.error}</p>{/if}
 			<div class="flex items-center gap-4">
-				<button
-					type="submit"
-					class="rounded px-5 py-2.5 font-medium text-white"
-					style="background: var(--status-planned)"
-				>
-					Announce it
-				</button>
+				<button type="submit" class="btn-primary px-5 py-2.5">Announce it</button>
 				<button
 					type="button"
 					class="text-sm hover:underline"

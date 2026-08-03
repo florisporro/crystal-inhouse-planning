@@ -8,7 +8,10 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<header class="border-b" style="border-color: var(--hairline); background: var(--surface)">
+<header
+	class="sticky top-0 z-20 border-b backdrop-blur"
+	style="border-color: var(--hairline); background: color-mix(in srgb, var(--surface) 82%, transparent)"
+>
 	<div class="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 md:gap-6">
 		<a href="/" class="flex items-center gap-2 font-semibold">
 			<Logo class="h-9 w-9" />
@@ -23,13 +26,7 @@
 			<a href={data.email ? '/my' : '/login'} class="hidden hover:underline md:inline">
 				{data.email ? 'My apartment' : 'Log in'}
 			</a>
-			<a
-				href="/announce"
-				class="rounded px-3 py-1.5 font-medium text-white"
-				style="background: var(--status-planned)"
-			>
-				+ Announce
-			</a>
+			<a href="/announce" class="btn-primary px-3 py-1.5">+ Announce</a>
 			<details class="relative md:hidden">
 				<summary
 					class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded text-xl [&::-webkit-details-marker]:hidden"

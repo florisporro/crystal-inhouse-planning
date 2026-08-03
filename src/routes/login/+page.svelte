@@ -12,10 +12,7 @@
 	</p>
 
 	{#if form?.sent}
-		<p
-			class="rounded border p-3 text-sm"
-			style="border-color: var(--hairline); background: var(--surface)"
-		>
+		<p class="card p-3 text-sm">
 			If the apartment number and email address match, a login link is on its way. It is valid for 5
 			minutes.
 		</p>
@@ -37,13 +34,7 @@
 				<input name="email" type="email" required class="mt-1 w-full rounded" />
 			</label>
 			{#if form?.error}<p class="text-sm" style="color: var(--critical)">{form.error}</p>{/if}
-			<button
-				type="submit"
-				class="rounded px-4 py-2 text-sm font-medium text-white"
-				style="background: var(--status-planned)"
-			>
-				Send login link
-			</button>
+			<button type="submit" class="btn-primary px-4 py-2 text-sm">Send login link</button>
 		</form>
 	{/if}
 </div>
