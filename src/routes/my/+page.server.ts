@@ -52,7 +52,8 @@ export const load = async ({ locals, url }) => {
 	};
 };
 
-// 'planned' is not settable here — only announcing a moving activity sets it
+// 'planned' is not settable here — the status card links into the announce
+// wizard, where the moving activity sets it
 const RESIDENT_SET = ['no_move_planned', 'moved_in'];
 
 async function checkedApartment(locals: App.Locals, form: FormData): Promise<number> {

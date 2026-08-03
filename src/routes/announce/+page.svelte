@@ -10,12 +10,14 @@
 	let note = $state('');
 	let apartment = $state<number | ''>('');
 
-	// (re)start the wizard whenever the prefill changes, e.g. arriving from a day page
+	// (re)start the wizard whenever the prefill changes, e.g. arriving from a day
+	// page (date) or the /my status prompt (type — skips straight to "when?")
 	$effect(() => {
 		date = data.prefillDate;
 		apartment = data.prefillApartment ?? '';
-		step = 1;
-		type = block = note = '';
+		type = data.prefillType;
+		step = data.prefillType ? 2 : 1;
+		block = note = '';
 	});
 
 	const types = [

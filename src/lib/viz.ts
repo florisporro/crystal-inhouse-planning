@@ -6,13 +6,18 @@ export const STATUSES = [
 	{ key: 'not_sold', label: 'Not sold' }
 ] as const;
 
-// what residents may set directly; 'planned' is reached only by announcing a
-// moving activity, and 'no_data' (never responded) is admin-only
+// the status cards residents see; 'planned' links into the announce wizard
+// (only its moving activity sets it), 'no_data' (never responded) is admin-only
 export const RESIDENT_STATUSES = [
 	{
 		key: 'no_move_planned',
 		label: 'No move planned yet',
 		hint: 'We have the apartment, but no moving date in sight.'
+	},
+	{
+		key: 'planned',
+		label: 'Our move is planned',
+		hint: 'We know roughly when we want to move in.'
 	},
 	{ key: 'moved_in', label: 'Fully moved in', hint: 'We live here — the move is done.' }
 ] as const;

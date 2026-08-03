@@ -3,7 +3,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
-import { ISO_DATE, activityFields } from '$lib/server/activityForm';
+import { ISO_DATE, TYPES, activityFields } from '$lib/server/activityForm';
 
 export const load = async ({ locals, url }) => {
 	if (!locals.user) redirect(302, '/login');
@@ -11,8 +11,12 @@ export const load = async ({ locals, url }) => {
 	const admin = isAdmin(locals.user.email);
 	if (numbers.length === 0 && !admin) redirect(302, '/my');
 
-	if (!admin && numbers.length > 0) {
-		// first things first: pick a move-in status before announcing anything
+	const typeParam = url.searchParams.get('type') ?? '';
+	const prefillType = TYPES.includes(typeParam) ? typeParam : '';
+
+	if (!admin && numbers.length > 0 && !prefillType) {
+		// first things first: pick a move-in status before announcing anything —
+		// unless the status prompt itself sent them here with a preselected type
 		const apts = await db
 			.select({ status: apartments.status })
 			.from(apartments)
@@ -25,6 +29,7 @@ export const load = async ({ locals, url }) => {
 	return {
 		numbers,
 		admin,
+		prefillType,
 		prefillDate: ISO_DATE.test(dateParam) ? dateParam : '',
 		prefillApartment: Number.isInteger(aptParam) && aptParam > 0 ? aptParam : (numbers[0] ?? null)
 	};

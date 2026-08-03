@@ -16,8 +16,15 @@
 	let savedFor = $state<number | null>(null);
 	const autoSave = (apartmentNumber: number) => {
 		return () =>
-			async ({ update }: { update: (opts?: { reset?: boolean }) => Promise<void> }) => {
+			async ({
+				result,
+				update
+			}: {
+				result: { type: string };
+				update: (opts?: { reset?: boolean }) => Promise<void>;
+			}) => {
 				await update({ reset: false });
+				if (result.type === 'failure') return;
 				savedFor = apartmentNumber;
 				setTimeout(() => (savedFor = null), 2000);
 			};
@@ -98,40 +105,34 @@
 					<span class="font-medium" style="color: var(--status-moved)">Saved ✓</span>
 				{/if}
 			</p>
-			{#if apt.status === 'planned'}
-				<div class="mb-2 rounded-lg border-2 p-3" style="border-color: var(--status-planned)">
-					<span class="flex items-center gap-2 font-medium">
-						<span class="h-3 w-3 shrink-0 rounded-full" style="background: var(--status-planned)"
-						></span>
-						Move planned{#if apt.plannedMoveDate}&nbsp;— {fmtDate(apt.plannedMoveDate)}{/if}
-					</span>
-					<span class="mt-1 block text-xs" style="color: var(--muted)">
-						Set by your moving activity below — adjust or cancel it there, or pick a status here to
-						override.
-					</span>
-				</div>
-			{/if}
-			<div class="grid gap-2 sm:grid-cols-2">
+			<div class="grid gap-2 sm:grid-cols-3">
 				{#each RESIDENT_STATUSES as s (s.key)}
 					{@const active = apt.status === s.key}
-					<label
+					<!-- "planned" is a link into the announce wizard (type preselected);
+					     the other statuses save in place via the radio -->
+					<svelte:element
+						this={s.key === 'planned' ? 'a' : 'label'}
+						href={s.key === 'planned' ? `/announce?apartment=${apt.number}&type=moving` : undefined}
 						class="cursor-pointer rounded-lg border-2 p-3 transition {active ? 'box-' + s.key : ''}"
 						style="border-color: {active ? statusColor[s.key] : 'var(--hairline)'}"
 					>
-						<input
-							type="radio"
-							name="status"
-							value={s.key}
-							checked={active}
-							class="sr-only"
-							onchange={(e) => e.currentTarget.form?.requestSubmit()}
-						/>
+						{#if s.key !== 'planned'}
+							<input
+								type="radio"
+								name="status"
+								value={s.key}
+								checked={active}
+								class="sr-only"
+								onchange={(e) => e.currentTarget.form?.requestSubmit()}
+							/>
+						{/if}
 						<span class="flex items-center gap-2 font-medium">
 							{#if !active}
 								<span class="h-3 w-3 shrink-0 rounded-full" style="background: {statusColor[s.key]}"
 								></span>
 							{/if}
-							{s.label}
+							{s.label}{#if s.key === 'planned' && active && apt.plannedMoveDate}&nbsp;—
+								{fmtDate(apt.plannedMoveDate)}{/if}
 						</span>
 						<span
 							class="mt-1 block text-xs {active ? 'opacity-80' : ''}"
@@ -139,7 +140,7 @@
 						>
 							{s.hint}
 						</span>
-					</label>
+					</svelte:element>
 				{/each}
 			</div>
 			{#if data.admin && apt.status !== 'no_data'}

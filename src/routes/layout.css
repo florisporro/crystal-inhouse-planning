@@ -41,8 +41,10 @@ body {
 	color: var(--ink);
 }
 
-/* form controls follow the mode; @tailwindcss/forms paints them white otherwise */
-input,
+/* form controls follow the mode; @tailwindcss/forms paints them white otherwise.
+   Checkboxes/radios are excluded: this unlayered rule would beat the plugin's
+   layered :checked paint and hide the white tick on a surface-colored box */
+input:not([type='checkbox']):not([type='radio']),
 select,
 textarea {
 	background-color: var(--surface);
