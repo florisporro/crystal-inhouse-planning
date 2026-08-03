@@ -7,6 +7,7 @@ import { canEdit } from '$lib/server/access';
 
 export const load = async ({ locals, params }) => {
 	const number = Number(params.number);
+	if (!Number.isInteger(number) || number < 1 || number > 179) error(404, 'No such apartment');
 	const [apt] = await db.select().from(apartments).where(eq(apartments.number, number));
 	if (!apt) error(404, 'No such apartment');
 

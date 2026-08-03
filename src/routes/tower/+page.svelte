@@ -29,8 +29,9 @@
 				{#each apts as a (a.number)}
 					<a
 						href="/apartment/{a.number}"
-						class="box-{a.status} flex h-7 w-9 items-center justify-center rounded-sm text-xs tabular-nums hover:opacity-80"
+						class="box-{a.status} flex h-10 w-10 items-center justify-center rounded-sm text-xs tabular-nums hover:opacity-80 md:h-7 md:w-9"
 						title="Apartment {a.number} — {statusLabel(a.status)}"
+						aria-label="Apartment {a.number} — {statusLabel(a.status)}"
 					>
 						{a.number}
 					</a>

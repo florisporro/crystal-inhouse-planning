@@ -27,7 +27,10 @@
 	{#each BLOCKS as block (block.key)}
 		{@const l = loads[block.key]}
 		{@const count = l.count}
-		<section class="rounded border p-4" style="border-color: var(--hairline); background: var(--surface)">
+		<section
+			class="rounded border p-4"
+			style="border-color: var(--hairline); background: var(--surface)"
+		>
 			<h2 class="font-medium">
 				{block.label} <span class="text-sm" style="color: var(--muted)">{block.hours}</span>
 			</h2>

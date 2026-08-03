@@ -69,14 +69,18 @@
 			<a
 				href="/?view=calendar"
 				class={toggleClass(data.view === 'calendar')}
-				style={data.view === 'calendar' ? 'background: var(--status-planned)' : 'color: var(--ink-2)'}
+				style={data.view === 'calendar'
+					? 'background: var(--status-planned)'
+					: 'color: var(--ink-2)'}
 			>
 				Calendar
 			</a>
 			<a
 				href="/?view=upcoming"
 				class={toggleClass(data.view === 'upcoming')}
-				style={data.view === 'upcoming' ? 'background: var(--status-planned)' : 'color: var(--ink-2)'}
+				style={data.view === 'upcoming'
+					? 'background: var(--status-planned)'
+					: 'color: var(--ink-2)'}
 			>
 				Upcoming
 			</a>
@@ -108,10 +112,16 @@
 				<a
 					href="/day/{d.date}"
 					class="rounded border p-1 hover:opacity-80"
-					style="border-color: {d.date === data.today ? 'var(--status-planned)' : 'var(--hairline)'}; background: var(--surface)"
+					aria-label="{fmtDate(d.date)} — morning {busyLabel(d.morning.load).toLowerCase()},
+						afternoon {busyLabel(d.afternoon.load).toLowerCase()}"
+					style="border-color: {d.date === data.today
+						? 'var(--status-planned)'
+						: 'var(--hairline)'}; background: var(--surface)"
 				>
 					<div class="mb-1 flex items-baseline justify-between text-xs" style="color: var(--muted)">
-						<span style={d.date === data.today ? 'color: var(--status-planned); font-weight: 600' : ''}>
+						<span
+							style={d.date === data.today ? 'color: var(--status-planned); font-weight: 600' : ''}
+						>
 							{Number(d.date.slice(-2))}
 						</span>
 						{#if d.morning.load > 1 || d.afternoon.load > 1}<span title="Very busy">⚠️</span>{/if}

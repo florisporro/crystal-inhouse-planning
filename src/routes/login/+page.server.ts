@@ -19,10 +19,17 @@ export const actions = {
 		// Only request a link when the pair matches; respond identically either way
 		// so the form doesn't reveal which emails are registered.
 		if (await canEdit(email, apartment)) {
-			await auth.api.signInMagicLink({
-				headers: request.headers,
-				body: { email, callbackURL: '/my' }
-			});
+			try {
+				await auth.api.signInMagicLink({
+					headers: request.headers,
+					body: { email, callbackURL: '/my' }
+				});
+			} catch (e) {
+				// a send failure (e.g. Postmark down) must not 500 here: that would
+				// reveal which addresses are registered, since unknown ones return
+				// { sent: true } below
+				console.error('magic link send failed:', e);
+			}
 		}
 		return { sent: true };
 	}

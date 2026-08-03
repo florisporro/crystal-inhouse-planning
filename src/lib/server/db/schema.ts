@@ -20,7 +20,9 @@ export const activities = sqliteTable('activities', {
 	date: text('date').notNull(), // ISO yyyy-mm-dd
 	block: text('block', { enum: ['morning', 'afternoon', 'full_day'] }).notNull(),
 	note: text('note'),
-	status: text('status', { enum: ['active', 'cancelled'] }).notNull().default('active'),
+	status: text('status', { enum: ['active', 'cancelled'] })
+		.notNull()
+		.default('active'),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
 		.$defaultFn(() => new Date()),

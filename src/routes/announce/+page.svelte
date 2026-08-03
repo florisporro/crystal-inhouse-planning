@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fmtDate } from '$lib/viz';
+	import { busyLabel, fmtDate, heatColor } from '$lib/viz';
 
 	let { data, form } = $props();
 
@@ -48,6 +48,19 @@
 
 	const typeLabel = $derived(types.find((t) => t.key === type)?.label ?? '');
 	const blockLabel = $derived(blocks.find((b) => b.key === block)?.label ?? '');
+
+	// announced busyness for the chosen day, per block (null = outside the 90-day window)
+	const dayBusy = $derived(
+		date && date >= data.today && date <= data.busyUntil
+			? (data.busy[date] ?? { morning: 0, afternoon: 0 })
+			: null
+	);
+	const blockBusy = (key: string) =>
+		dayBusy === null
+			? null
+			: key === 'full_day'
+				? Math.max(dayBusy.morning, dayBusy.afternoon)
+				: dayBusy[key as 'morning' | 'afternoon'];
 
 	const cardClass =
 		'block w-full rounded-lg border p-4 text-left transition hover:opacity-90 cursor-pointer';
@@ -127,11 +140,26 @@
 				>
 					<span class="font-medium">{b.label}</span>
 					<span class="ml-2 text-sm" style="color: var(--ink-2)">{b.hint}</span>
+					{#if blockBusy(b.key) !== null}
+						{@const load = blockBusy(b.key) ?? 0}
+						<span class="mt-1 flex items-center gap-1.5 text-sm" style="color: var(--ink-2)">
+							<span
+								class="inline-block h-2.5 w-2.5 rounded-full"
+								style="background: {heatColor(load) ?? 'var(--grid)'}"
+							></span>
+							{busyLabel(load)} so far
+						</span>
+					{/if}
 				</button>
 			{/each}
 		</div>
 		{#if !date}<p class="mt-2 text-sm" style="color: var(--muted)">Pick a day first.</p>{/if}
-		<button type="button" class="mt-4 text-sm hover:underline" style="color: var(--ink-2)" onclick={() => (step = 1)}>
+		<button
+			type="button"
+			class="mt-4 text-sm hover:underline"
+			style="color: var(--ink-2)"
+			onclick={() => (step = 1)}
+		>
 			← Back
 		</button>
 	{:else}
@@ -154,8 +182,8 @@
 					<span>
 						We are fully moved in after this move
 						<span class="block text-xs" style="color: var(--muted)">
-							This sets your apartment's status to “Move planned” for {fmtDate(date)} (or “Moved
-							in” if the date has passed).
+							This sets your apartment's status to “Move planned” for {fmtDate(date)} (or “Moved in” if
+							the date has passed).
 						</span>
 					</span>
 				</label>
@@ -179,7 +207,12 @@
 				>
 					Announce it
 				</button>
-				<button type="button" class="text-sm hover:underline" style="color: var(--ink-2)" onclick={() => (step = 2)}>
+				<button
+					type="button"
+					class="text-sm hover:underline"
+					style="color: var(--ink-2)"
+					onclick={() => (step = 2)}
+				>
 					← Back
 				</button>
 			</div>

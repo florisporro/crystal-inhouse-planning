@@ -16,6 +16,11 @@ export const auth = betterAuth({
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'sqlite' }),
+	// explicit so a stray NODE_ENV in the server .env can't silently disable it
+	rateLimit: { enabled: true, window: 60, max: 5 },
+	// per-client limiting behind the Cloudflare tunnel; without this every
+	// visitor shares one bucket and residents could block each other
+	advanced: { ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] } },
 	plugins: [
 		magicLink({
 			sendMagicLink: async ({ email, url }) => {

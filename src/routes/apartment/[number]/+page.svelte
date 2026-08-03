@@ -24,7 +24,8 @@
 </div>
 <p class="mb-4 flex items-center gap-3 text-sm" style="color: var(--ink-2)">
 	Floor {data.floor}
-	<span class="box-{data.status} rounded-full px-2.5 py-0.5 text-xs font-medium">{statusLabel}</span>
+	<span class="box-{data.status} rounded-full px-2.5 py-0.5 text-xs font-medium">{statusLabel}</span
+	>
 	{#if data.status === 'planned' && data.plannedMoveDate}
 		<span>planned move: {fmtDate(data.plannedMoveDate)}</span>
 	{/if}

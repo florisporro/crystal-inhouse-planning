@@ -35,6 +35,14 @@ On the server, with the repo checked out:
 3. `docker compose up -d --build`
 
 The SQLite database lives in `./data/local.db` on the host (volume mount) — back that
-directory up. Each container boot pushes the schema and re-seeds apartments + emails
-from the CSVs; resident statuses and activities are preserved. Do **not** run
-`db:seed-samples` in production. Point the Cloudflare Zero Trust tunnel at port 3000.
+directory up, e.g. a nightly host cron:
+
+```
+0 3 * * * sqlite3 /path/to/repo/data/local.db ".backup /path/to/backups/local-$(date +\%F).db"
+```
+
+Each container boot applies migrations and re-seeds apartments + emails from the CSVs;
+resident statuses and activities are preserved. Admin edits to the login-email list
+(on `/admin`) are written back to `./data/apartment-emails.csv`, so they survive the
+re-seed. Do **not** run `db:seed-samples` in production. Point the Cloudflare Zero
+Trust tunnel at port 3000.

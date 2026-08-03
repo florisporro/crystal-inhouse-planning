@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { displayStatus, effectiveStatus, isoDate } from './viz';
+import { busyLabel, displayStatus, effectiveStatus, heatColor, isoDate } from './viz';
+
+describe('busyLabel', () => {
+	it('maps loads to the public wording', () => {
+		expect(busyLabel(0)).toBe('No activity');
+		expect(busyLabel(0.3)).toBe('Quiet');
+		expect(busyLabel(0.6)).toBe('Moderate');
+		expect(busyLabel(1)).toBe('Busy');
+		expect(busyLabel(1.2)).toBe('Very busy');
+	});
+});
+
+describe('heatColor', () => {
+	it('recedes at zero and clamps above capacity', () => {
+		expect(heatColor(0)).toBeNull();
+		expect(heatColor(0.1)).toBeTruthy();
+		expect(heatColor(5)).toBe(heatColor(1)); // clamped to the darkest ramp step
+	});
+});
 
 describe('effectiveStatus', () => {
 	it('flips a past planned move to moved_in, leaves the rest alone', () => {

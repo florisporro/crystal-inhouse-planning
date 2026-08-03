@@ -41,7 +41,11 @@ export const load = async ({ url }) => {
 	const base = { stats, total: apts.length, today: isoDate(0) };
 
 	if (url.searchParams.get('view') === 'upcoming') {
-		return { ...base, view: 'upcoming' as const, upcoming: await actsBetween(isoDate(0), isoDate(6)) };
+		return {
+			...base,
+			view: 'upcoming' as const,
+			upcoming: await actsBetween(isoDate(0), isoDate(6))
+		};
 	}
 
 	const monthParam = url.searchParams.get('month') ?? '';

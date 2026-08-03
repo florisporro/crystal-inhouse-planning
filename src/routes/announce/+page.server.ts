@@ -1,9 +1,37 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { eq, inArray } from 'drizzle-orm';
+import { and, between, eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
 import { ISO_DATE, TYPES, activityFields } from '$lib/server/activityForm';
+import { publicLoad } from '$lib/capacity';
+import { getCapacity, getCosts } from '$lib/server/capacity';
+import { isoDate } from '$lib/viz';
+
+// so residents can pick a quiet day: date -> per-block busyness for the next 90 days
+async function busynessMap() {
+	const acts = await db
+		.select({
+			date: activities.date,
+			block: activities.block,
+			type: activities.type,
+			floor: apartments.floor
+		})
+		.from(activities)
+		.innerJoin(apartments, eq(activities.apartmentNumber, apartments.number))
+		.where(and(eq(activities.status, 'active'), between(activities.date, isoDate(0), isoDate(90))));
+	const cap = await getCapacity();
+	const costs = await getCosts();
+	const busy: Record<string, { morning: number; afternoon: number }> = {};
+	for (const date of new Set(acts.map((a) => a.date))) {
+		const dayActs = acts.filter((a) => a.date === date);
+		busy[date] = {
+			morning: publicLoad(dayActs, 'morning', cap, costs).load,
+			afternoon: publicLoad(dayActs, 'afternoon', cap, costs).load
+		};
+	}
+	return busy;
+}
 
 export const load = async ({ locals, url }) => {
 	if (!locals.user) redirect(302, '/login');
@@ -29,6 +57,9 @@ export const load = async ({ locals, url }) => {
 	return {
 		numbers,
 		admin,
+		busy: await busynessMap(),
+		busyUntil: isoDate(90),
+		today: isoDate(0),
 		prefillType,
 		prefillDate: ISO_DATE.test(dateParam) ? dateParam : '',
 		prefillApartment: Number.isInteger(aptParam) && aptParam > 0 ? aptParam : (numbers[0] ?? null)

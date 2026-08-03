@@ -3,7 +3,7 @@
 // Run: bun run db:seed-samples
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { activities, apartments } from '../src/lib/server/db/schema';
 
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set');

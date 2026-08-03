@@ -47,7 +47,10 @@ const unsoldNumbers = [
 	...new Set(rows.filter((r) => unsoldEmails.includes(r.email)).map((r) => r.apartmentNumber))
 ];
 if (unsoldNumbers.length > 0) {
-	await db.update(apartments).set({ unsold: true }).where(inArray(apartments.number, unsoldNumbers));
+	await db
+		.update(apartments)
+		.set({ unsold: true })
+		.where(inArray(apartments.number, unsoldNumbers));
 	await db
 		.update(apartments)
 		.set({ unsold: false })
