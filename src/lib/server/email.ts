@@ -2,11 +2,15 @@ import { appendFileSync } from 'node:fs';
 import { env } from '$env/dynamic/private';
 
 export async function sendEmail(opts: { to: string; subject: string; text: string }) {
+	// e2e outbox mode: absolute override — never reaches Postmark, even if a
+	// token leaks into the test environment
+	if (env.EMAIL_OUTBOX) {
+		appendFileSync(env.EMAIL_OUTBOX, JSON.stringify(opts) + '\n');
+		return;
+	}
 	if (!env.POSTMARK_TOKEN) {
 		// no token configured (dev): log instead of sending
 		console.log(`\n=== EMAIL to ${opts.to} ===\n${opts.subject}\n\n${opts.text}\n===\n`);
-		// e2e tests read the magic link from this file
-		if (env.EMAIL_OUTBOX) appendFileSync(env.EMAIL_OUTBOX, JSON.stringify(opts) + '\n');
 		return;
 	}
 	const res = await fetch('https://api.postmarkapp.com/email', {
