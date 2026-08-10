@@ -30,3 +30,7 @@ e2e/.outbox.jsonl
 # Real resident emails — never commit (crystal-apartments-by-floor.csv is fine)
 apartment-emails.csv
 /data
+
+# seed data, uploaded to the server manually
+activities.csv
+Crystal planner volledig.xls

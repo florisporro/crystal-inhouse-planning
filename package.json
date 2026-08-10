@@ -19,6 +19,7 @@
 		"db:seed": "bun run scripts/seed-apartments.ts",
 		"db:seed-samples": "bun run scripts/seed-sample-activities.ts",
 		"db:seed-emails": "bun run scripts/seed-emails.ts",
+		"db:seed-activities": "bun run scripts/seed-activities.ts",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
