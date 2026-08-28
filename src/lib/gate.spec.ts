@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gateActivity, gatePhase } from './gate';
+import { gateActivity, gatePhase, withHuismeester } from './gate';
 
 const act = (date: string, status = 'active') => ({ id: 1, date, status });
 
@@ -54,5 +54,18 @@ describe('gatePhase', () => {
 	it('fails on server errors and on an unreached far end', () => {
 		expect(gatePhase(503, false)).toBe('failed');
 		expect(gatePhase(408, false)).toBe('failed');
+	});
+});
+
+describe('withHuismeester', () => {
+	it('appends a contact line when a phone number is configured', () => {
+		expect(withHuismeester('Could not reach the gate.', '+31612345678')).toBe(
+			'Could not reach the gate. Call the Huismeester at +31612345678.'
+		);
+	});
+
+	it('leaves the message unchanged when no phone number is configured', () => {
+		expect(withHuismeester('Could not reach the gate.', null)).toBe('Could not reach the gate.');
+		expect(withHuismeester('Could not reach the gate.')).toBe('Could not reach the gate.');
 	});
 });

@@ -55,3 +55,8 @@ export const GATE_MESSAGES: Record<GatePhase, string> = {
 	done: 'Gate dialled — it should be open.',
 	failed: 'Could not reach the gate.'
 };
+
+/** append a fallback contact when a phone number is configured, otherwise leave the message as-is */
+export function withHuismeester(message: string, phone?: string | null): string {
+	return phone ? `${message} Call the Huismeester at ${phone}.` : message;
+}

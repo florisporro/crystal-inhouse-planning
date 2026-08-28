@@ -1,12 +1,13 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { asc, desc, eq, inArray } from 'drizzle-orm';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
 import { activities, apartments, gateOpens } from '$lib/server/db/schema';
 import { auth } from '$lib/server/auth';
 import { apartmentNumbersForEmail, canEdit, isAdmin } from '$lib/server/access';
 import { activityFields } from '$lib/server/activityForm';
 import { effectiveStatus } from '$lib/viz';
-import { GATE_COOLDOWN_MS, GATE_TERMS, gateActivity } from '$lib/gate';
+import { GATE_COOLDOWN_MS, GATE_TERMS, gateActivity, withHuismeester } from '$lib/gate';
 import { dialGate, todayIso } from '$lib/server/gate';
 import { log } from '$lib/server/log';
 
@@ -23,8 +24,10 @@ export const load = async ({ locals, url }) => {
 	if (isAdmin(user.email) && Number.isInteger(requested) && requested > 0) {
 		numbers = [requested];
 	}
+	const huismeesterPhone = env.HUISMEESTER_PHONE || null;
+
 	if (numbers.length === 0 && !isAdmin(user.email)) {
-		return { email: user.email, admin: false, today: todayIso(), apartments: [] };
+		return { email: user.email, admin: false, today: todayIso(), apartments: [], huismeesterPhone };
 	}
 
 	const apts = await db
@@ -52,6 +55,7 @@ export const load = async ({ locals, url }) => {
 		email: user.email,
 		admin: isAdmin(user.email),
 		today: todayIso(),
+		huismeesterPhone,
 		apartments: apts.map((a) => {
 			// rows are ordered desc, so the first match is the latest
 			const lastOpen = gateOpenRows.find((g) => g.apartmentNumber === a.number);
@@ -207,7 +211,9 @@ export const actions = {
 		} catch (e) {
 			console.error('gate dial failed', e);
 			await db.update(gateOpens).set({ phase: 'failed' }).where(eq(gateOpens.id, row.id));
-			return fail(502, { gateError: 'Could not reach the gate.' });
+			return fail(502, {
+				gateError: withHuismeester('Could not reach the gate.', env.HUISMEESTER_PHONE)
+			});
 		}
 		return { gateOpenId: row.id };
 	},

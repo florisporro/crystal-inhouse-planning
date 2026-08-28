@@ -35,6 +35,8 @@ On the server, with the repo checked out:
    - `GATE_TO_NUMBER`, `GATE_FROM_NUMBER` — the gate unit and our verified caller ID,
      both E.164. Secrets: keep them out of git
    - `GATE_RING_MS` — how long to ring before hanging up (default 4000)
+   - `HUISMEESTER_PHONE` — shown to the resident as a fallback contact if the gate
+     call fails
 
    The trunk must have outbound calling enabled, this API key in its allowed keys,
    `GATE_FROM_NUMBER` verified as a caller ID, and the Netherlands enabled under
