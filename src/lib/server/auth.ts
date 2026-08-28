@@ -6,7 +6,8 @@ import { magicLink } from 'better-auth/plugins';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
 import { sendEmail } from '$lib/server/email';
-import { isKnownEmail } from '$lib/server/access';
+import { isKnownEmail, apartmentNumbersForEmail } from '$lib/server/access';
+import { log } from '$lib/server/log';
 
 // ORIGIN is the sole trusted origin: it drives CSRF checking and the Secure
 // cookie flag. Refuse to boot without it rather than degrade silently.
@@ -27,6 +28,7 @@ export const auth = betterAuth({
 				// trust boundary: the public auth API can request links for any address;
 				// only send to emails that belong to an apartment or an admin
 				if (!(await isKnownEmail(email))) return;
+					log('auth.magic_link', { apartments: await apartmentNumbersForEmail(email) });
 				await sendEmail({
 					to: email,
 					subject: 'Your Crystal Tower login link',

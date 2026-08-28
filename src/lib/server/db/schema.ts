@@ -48,4 +48,22 @@ export const apartmentEmails = sqliteTable(
 	(t) => [primaryKey({ columns: [t.apartmentNumber, t.email] })]
 );
 
+// audit trail for gate openings; doubles as the per-apartment cooldown source
+export const gateOpens = sqliteTable('gate_opens', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	apartmentNumber: integer('apartment_number')
+		.notNull()
+		.references(() => apartments.number),
+	activityId: integer('activity_id').references(() => activities.id), // null for an admin open
+	email: text('email').notNull(),
+	callId: text('call_id'), // null if Bird rejected the request outright
+	// last phase we saw: dialling | ringing | done | failed
+	phase: text('phase', { enum: ['dialling', 'ringing', 'done', 'failed'] })
+		.notNull()
+		.default('dialling'),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.notNull()
+		.$defaultFn(() => new Date())
+});
+
 export * from './auth.schema';

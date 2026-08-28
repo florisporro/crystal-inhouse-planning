@@ -7,6 +7,7 @@ import { ISO_DATE, TYPES, activityFields } from '$lib/server/activityForm';
 import { publicLoad } from '$lib/capacity';
 import { getCapacity, getCosts } from '$lib/server/capacity';
 import { isoDate } from '$lib/viz';
+import { log } from '$lib/server/log';
 
 // so residents can pick a quiet day: date -> per-block busyness for the next 90 days
 async function busynessMap() {
@@ -75,6 +76,7 @@ export const actions = {
 		const fields = activityFields(form);
 		if (!fields) return fail(400, { error: 'Please pick an activity type, date and time.' });
 		await db.insert(activities).values({ apartmentNumber: apartment, ...fields });
+		log('activity.create', { apartment, type: fields.type, date: fields.date });
 
 		// the moving activity is the single source of the "move planned" status
 		if (fields.type === 'moving' && form.get('movedAfter')) {

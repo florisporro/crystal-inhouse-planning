@@ -26,7 +26,8 @@
 		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
 	"dependencies": {
-		"@libsql/client": "^0.17.3"
+		"@libsql/client": "^0.17.3",
+		"sip": "^0.0.6"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

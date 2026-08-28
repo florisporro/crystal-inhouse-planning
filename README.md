@@ -15,7 +15,8 @@ bun run dev
 ```
 
 Copy `.env.example` to `.env`. With `POSTMARK_TOKEN` empty, login links are printed to
-the dev-server console instead of emailed.
+the dev-server console instead of emailed. Likewise with `BIRD_SIP_DOMAIN` empty, the
+gate opener simulates the call instead of dialling out.
 
 ## Deployment (Docker)
 
@@ -28,6 +29,17 @@ On the server, with the repo checked out:
    - `ADMIN_EMAILS` — comma-separated admin logins
    - `UNSOLD_EMAIL` — comma-separated; apartments paired with any of these emails are
      shown as "not sold"
+   - `BIRD_KEY`, `BIRD_SIP_DOMAIN` — Bird SIP trunk for the gate opener. Bird's Voice
+     product originates calls over SIP, not HTTP; the key doubles as the SIP digest
+     password (the username is always `bird`)
+   - `GATE_TO_NUMBER`, `GATE_FROM_NUMBER` — the gate unit and our verified caller ID,
+     both E.164. Secrets: keep them out of git
+   - `GATE_RING_MS` — how long to ring before hanging up (default 4000)
+
+   The trunk must have outbound calling enabled, this API key in its allowed keys,
+   `GATE_FROM_NUMBER` verified as a caller ID, and the Netherlands enabled under
+   Destinations.
+
 2. Place the real `apartment-emails.csv` in `./data/` (next to the database). It is
    re-seeded on every boot; if missing, the container logs a warning and keeps the
    existing table. List unsold apartments against the seller's email and put that
