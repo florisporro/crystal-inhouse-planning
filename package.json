@@ -20,6 +20,7 @@
 		"db:seed-samples": "bun run scripts/seed-sample-activities.ts",
 		"db:seed-emails": "bun run scripts/seed-emails.ts",
 		"db:seed-activities": "bun run scripts/seed-activities.ts",
+		"db:seed-wiki": "bun --preload ./scripts/sveltekit-env.ts scripts/seed-wiki.ts",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
@@ -27,6 +28,13 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.17.3",
+		"@tiptap/core": "^3.31.4",
+		"@tiptap/extension-image": "^3.31.4",
+		"@tiptap/markdown": "^3.31.4",
+		"@tiptap/pm": "^3.31.4",
+		"@tiptap/starter-kit": "^3.31.4",
+		"diff": "^9.0.0",
+		"marked": "^18.0.14",
 		"sip": "^0.0.6"
 	},
 	"devDependencies": {

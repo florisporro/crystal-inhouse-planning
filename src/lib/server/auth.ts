@@ -6,6 +6,7 @@ import { magicLink } from 'better-auth/plugins';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
 import { sendEmail } from '$lib/server/email';
+import { emailLayout } from '$lib/server/emailTemplate';
 import { isKnownEmail, apartmentNumbersForEmail } from '$lib/server/access';
 import { log } from '$lib/server/log';
 
@@ -28,11 +29,21 @@ export const auth = betterAuth({
 				// trust boundary: the public auth API can request links for any address;
 				// only send to emails that belong to an apartment or an admin
 				if (!(await isKnownEmail(email))) return;
-					log('auth.magic_link', { apartments: await apartmentNumbersForEmail(email) });
+				log('auth.magic_link', { apartments: await apartmentNumbersForEmail(email) });
 				await sendEmail({
 					to: email,
 					subject: 'Your Crystal Tower login link',
-					text: `Click to log in (valid 5 minutes):\n\n${url}\n\nIf you did not request this, ignore this email.`
+					...emailLayout({
+						preheader: 'Your login link is valid for 5 minutes.',
+						heading: 'Log in to Crystal Tower',
+						body: [
+							{
+								p: 'Use the button below to log in. The link works once and is valid for 5 minutes.'
+							}
+						],
+						button: { label: 'Log in', href: url },
+						footer: `You get this email because someone asked for a login link for ${email}. If that wasn't you, ignore this email: nobody can log in without it.`
+					})
 				});
 			}
 		}),

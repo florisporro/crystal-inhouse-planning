@@ -1,7 +1,12 @@
 import { appendFileSync } from 'node:fs';
 import { env } from '$env/dynamic/private';
 
-export async function sendEmail(opts: { to: string; subject: string; text: string }) {
+export async function sendEmail(opts: {
+	to: string;
+	subject: string;
+	text: string;
+	html?: string;
+}) {
 	// e2e outbox mode: absolute override — never reaches Postmark, even if a
 	// token leaks into the test environment
 	if (env.EMAIL_OUTBOX) {
@@ -25,6 +30,7 @@ export async function sendEmail(opts: { to: string; subject: string; text: strin
 			To: opts.to,
 			Subject: opts.subject,
 			TextBody: opts.text,
+			HtmlBody: opts.html,
 			MessageStream: 'outbound'
 		})
 	});

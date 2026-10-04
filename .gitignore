@@ -34,3 +34,6 @@ apartment-emails.csv
 # seed data, uploaded to the server manually
 activities.csv
 Crystal planner volledig.xls
+
+# wiki seed content: contains private sections, keep out of git
+/wiki-seed

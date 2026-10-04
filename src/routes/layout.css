@@ -153,3 +153,407 @@ textarea {
 	);
 	color: #fff;
 }
+
+/* ---- wiki ------------------------------------------------------------------ */
+:root {
+	--header-h: 4rem;
+}
+html {
+	scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+/* sticky columns below the site header */
+.wiki-sidebar,
+.wiki-sticky {
+	position: sticky;
+	top: calc(var(--header-h) + 1px);
+	max-height: calc(100vh - var(--header-h) - 1px);
+	overflow-y: auto;
+}
+.wiki-sidebar {
+	align-self: start;
+	height: calc(100vh - var(--header-h) - 1px);
+}
+.wiki-topic > summary::-webkit-details-marker {
+	display: none;
+}
+.wiki-topic .chevron {
+	color: var(--muted);
+	transition: transform 0.15s;
+}
+.wiki-topic:not([open]) .chevron {
+	transform: rotate(-90deg);
+}
+.wiki-nav-link {
+	color: var(--ink-2);
+}
+.wiki-nav-link:hover {
+	color: var(--ink);
+	background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.wiki-nav-link[aria-current='page'] {
+	background: var(--status-planned);
+	color: #fff;
+	font-weight: 600;
+}
+
+.wiki-toc a {
+	display: block;
+	padding: 0.15rem 0;
+	color: var(--ink-2);
+}
+.wiki-toc a:hover {
+	color: var(--ink);
+}
+.wiki-toc a[aria-current='true'] {
+	color: var(--status-planned);
+	font-weight: 600;
+}
+
+.wiki-pager {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--hairline);
+	border-radius: 0.5rem;
+	background: var(--surface);
+	color: var(--ink-2);
+}
+a.wiki-pager:hover {
+	border-color: var(--status-planned);
+}
+
+/* reading typography; the editor uses the same class so pages look the same while editing */
+.wiki-prose {
+	font-size: 1.0625rem;
+	line-height: 1.75;
+	color: var(--ink);
+	overflow-wrap: break-word;
+}
+.wiki-prose > * + *,
+.wiki-prose :is(section, aside, blockquote, li) > * + * {
+	margin-top: 1.1em;
+}
+.wiki-prose :is(h2, h3, h4) {
+	position: relative;
+	font-weight: 650;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+}
+.wiki-prose h2 {
+	font-size: 1.75rem;
+	margin-top: 2.25em;
+}
+.wiki-prose h3 {
+	font-size: 1.3rem;
+	margin-top: 1.9em;
+}
+.wiki-prose h4 {
+	font-size: 1.0625rem;
+	margin-top: 1.6em;
+}
+.wiki-prose :is(h2, h3, h4) + * {
+	margin-top: 0.6em;
+}
+.wiki-prose > :first-child {
+	margin-top: 0;
+}
+.wiki-prose .anchor {
+	margin-left: 0.4em;
+	color: var(--muted);
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+.wiki-prose .anchor::after {
+	content: '#';
+}
+.wiki-prose :is(h2, h3, h4):hover .anchor,
+.wiki-prose .anchor:focus-visible {
+	opacity: 1;
+}
+.wiki-prose a {
+	color: var(--status-planned);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	text-decoration-thickness: 1px;
+}
+.wiki-prose a:hover {
+	text-decoration-thickness: 2px;
+}
+.wiki-prose strong {
+	font-weight: 650;
+}
+.wiki-prose :is(ul, ol) {
+	padding-left: 1.5em;
+}
+.wiki-prose ul {
+	list-style: disc;
+}
+.wiki-prose ol {
+	list-style: decimal;
+}
+.wiki-prose li::marker {
+	color: var(--muted);
+}
+/* Tiptap wraps list items in paragraphs; without this, lists read double-spaced */
+.wiki-prose li + li {
+	margin-top: 0.35em;
+}
+.wiki-prose li > p {
+	margin: 0;
+}
+.wiki-prose code {
+	font-size: 0.875em;
+	padding: 0.15em 0.35em;
+	border-radius: 0.3rem;
+	background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.wiki-prose pre {
+	padding: 1rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--hairline);
+	background: var(--surface);
+	overflow-x: auto;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+.wiki-prose pre code {
+	padding: 0;
+	background: none;
+}
+.wiki-prose img {
+	max-width: 100%;
+	border-radius: 0.5rem;
+	border: 1px solid var(--hairline);
+}
+.wiki-prose hr {
+	border-color: var(--grid);
+	margin: 2.5em 0;
+}
+.wiki-prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9375rem;
+}
+.wiki-prose :is(th, td) {
+	text-align: left;
+	padding: 0.5em 0.75em;
+	border-bottom: 1px solid var(--hairline);
+}
+.wiki-prose th {
+	font-weight: 650;
+	border-bottom-color: var(--grid);
+}
+.wiki-prose blockquote:not(.callout) {
+	padding-left: 1em;
+	border-left: 3px solid var(--grid);
+	color: var(--ink-2);
+}
+
+/* callouts and private sections: one family, tinted panel with a left rule */
+.callout,
+.wiki-private {
+	--tone: var(--status-planned);
+	padding: 0.85rem 1.1rem;
+	border-left: 4px solid var(--tone);
+	border-radius: 0.375rem;
+	background: color-mix(in srgb, var(--tone) 9%, transparent);
+	color: var(--ink);
+}
+.callout-tip {
+	--tone: var(--status-moved);
+}
+.callout-warning {
+	--tone: var(--status-noplan);
+}
+.callout-danger {
+	--tone: var(--critical);
+}
+.callout-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 650;
+	color: var(--tone);
+}
+.callout > :first-child,
+.wiki-private > :first-child {
+	margin-top: 0;
+}
+.callout-title + * {
+	margin-top: 0.4em !important;
+}
+.wiki-private {
+	--tone: var(--status-noplan);
+}
+.wiki-private::before {
+	content: '🔒 Residents only';
+	display: block;
+	font-size: 0.75rem;
+	font-weight: 650;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--tone);
+	margin-bottom: 0.4rem;
+}
+.wiki-missing {
+	color: var(--critical);
+	text-decoration: underline dotted;
+}
+
+/* in the editor a callout is a blockquote whose marker text stays visible */
+.ProseMirror blockquote.callout {
+	color: var(--ink);
+}
+.ProseMirror .callout-marker {
+	color: var(--tone);
+	font-weight: 650;
+	font-size: 0.875em;
+}
+
+/* search */
+kbd {
+	display: inline-block;
+	min-width: 1.4em;
+	padding: 0.05em 0.35em;
+	border: 1px solid var(--grid);
+	border-bottom-width: 2px;
+	border-radius: 0.3rem;
+	background: var(--surface);
+	font-family: inherit;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	text-align: center;
+	color: var(--ink-2);
+}
+.search-trigger {
+	border-color: var(--grid);
+	background: var(--surface);
+	color: var(--ink-2);
+}
+.search-trigger:hover {
+	border-color: var(--muted);
+}
+.search-dialog {
+	width: min(48rem, calc(100vw - 2rem));
+	max-height: 85vh;
+	margin: 4.5rem auto auto;
+	border-radius: 0.75rem;
+	border: 1px solid var(--hairline);
+	background: var(--page);
+	color: var(--ink);
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+.search-dialog::backdrop {
+	background: rgba(11, 11, 11, 0.35);
+	backdrop-filter: blur(3px);
+}
+.search-field {
+	border-color: var(--status-planned);
+	background: var(--surface);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-planned) 20%, transparent);
+}
+.search-field input {
+	border: 0;
+	outline: none;
+	box-shadow: none;
+}
+.search-field input::-webkit-search-cancel-button {
+	display: none;
+}
+.search-hit {
+	background: var(--surface);
+	border: 1px solid var(--hairline);
+}
+.search-row {
+	color: var(--ink);
+}
+.search-row:hover,
+.search-row.active {
+	background: color-mix(in srgb, var(--status-planned) 10%, transparent);
+}
+.search-section {
+	position: relative;
+	border-top: 1px solid var(--hairline);
+}
+/* tree line from the page down to each section */
+.search-section::before {
+	content: '';
+	position: absolute;
+	left: 1.6rem;
+	top: 0;
+	bottom: 0;
+	width: 0.6rem;
+	border-left: 1.5px solid var(--grid);
+}
+.search-section.last::before {
+	bottom: auto;
+	height: 1.35rem;
+}
+.search-section::after {
+	content: '';
+	position: absolute;
+	left: 1.6rem;
+	top: 1.35rem;
+	width: 0.6rem;
+	border-top: 1.5px solid var(--grid);
+}
+.wiki-snippet mark {
+	background: none;
+	color: var(--ink);
+	font-weight: 650;
+}
+
+/* suggestion and history diffs */
+.wiki-words ins,
+.wiki-added {
+	background: color-mix(in srgb, var(--status-moved) 14%, transparent);
+	text-decoration: none;
+}
+.wiki-words del,
+.wiki-removed {
+	background: color-mix(in srgb, var(--critical) 12%, transparent);
+}
+.wiki-added,
+.wiki-removed {
+	border-radius: 0.375rem;
+	padding: 0.25rem 0.75rem;
+}
+.wiki-edit-btn {
+	border-color: var(--grid);
+	background: var(--surface);
+	color: var(--ink-2);
+}
+.wiki-edit-btn:hover {
+	border-color: var(--status-planned);
+	color: var(--status-planned);
+}
+/* placeholder where content is hidden from logged-out visitors */
+.wiki-locked {
+	padding: 1rem 1.1rem;
+	border: 1.5px dashed color-mix(in srgb, var(--status-noplan) 60%, transparent);
+	border-radius: 0.5rem;
+	background: color-mix(in srgb, var(--status-noplan) 6%, transparent);
+}
+.wiki-locked p {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	margin: 0;
+}
+.wiki-prose .wiki-locked a {
+	margin-left: auto;
+	padding: 0.35rem 0.85rem;
+	border-radius: 0.5rem;
+	background: var(--status-planned);
+	color: #fff;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	text-decoration: none;
+}
+.wiki-prose .wiki-locked a:hover {
+	background: var(--btn-hover);
+}

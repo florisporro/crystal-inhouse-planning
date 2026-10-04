@@ -5,7 +5,7 @@ import { activities, apartments } from '$lib/server/db/schema';
 import { publicLoad } from '$lib/capacity';
 import { getCapacity, getCosts } from '$lib/server/capacity';
 
-export const load = async ({ params }) => {
+export const load = async ({ locals, params }) => {
 	// regex alone accepts 9999-99-99; the roundtrip check rejects impossible dates
 	const parsed = new Date(`${params.date}T00:00:00Z`);
 	if (
@@ -34,7 +34,8 @@ export const load = async ({ params }) => {
 	const costs = await getCosts();
 	return {
 		date: params.date,
-		acts,
+		// visitors see what happens on which floor, not which apartment
+		acts: acts.map((a) => ({ ...a, apartmentNumber: locals.user ? a.apartmentNumber : null })),
 		morning: publicLoad(acts, 'morning', cap, costs),
 		afternoon: publicLoad(acts, 'afternoon', cap, costs)
 	};

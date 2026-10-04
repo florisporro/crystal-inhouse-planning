@@ -14,7 +14,9 @@ RUN DATABASE_URL=file:/tmp/build.db BETTER_AUTH_SECRET=build-only ORIGIN=http://
 
 # NODE_ENV=production enables better-auth's rate limiter and secure-cookie defaults
 ENV PORT=3000 NODE_ENV=production DATABASE_URL=file:/data/local.db \
-	APARTMENT_EMAILS_CSV=/data/apartment-emails.csv
+	APARTMENT_EMAILS_CSV=/data/apartment-emails.csv \
+	WIKI_IMAGES_DIR=/data/wiki-images WIKI_SEED_DIR=/data/wiki-seed \
+	BODY_SIZE_LIMIT=6M
 EXPOSE 3000
 
 # every boot: apply committed migrations (never push --force — destructive on drift),

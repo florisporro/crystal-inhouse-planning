@@ -1,13 +1,14 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { canEdit } from '$lib/server/access';
+import { safeNext } from '$lib/server/next';
 
-export const load = ({ locals }) => {
-	if (locals.user) redirect(302, '/my');
+export const load = ({ locals, url }) => {
+	if (locals.user) redirect(302, safeNext(url.searchParams.get('next')) ?? '/my');
 };
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, url }) => {
 		const form = await request.formData();
 		const apartment = Number(form.get('apartment'));
 		const email = form.get('email')?.toString().trim().toLowerCase() ?? '';
@@ -22,7 +23,7 @@ export const actions = {
 			try {
 				await auth.api.signInMagicLink({
 					headers: request.headers,
-					body: { email, callbackURL: '/my' }
+					body: { email, callbackURL: safeNext(url.searchParams.get('next')) ?? '/my' }
 				});
 			} catch (e) {
 				// a send failure (e.g. Postmark down) must not 500 here: that would

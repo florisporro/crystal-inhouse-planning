@@ -1,10 +1,11 @@
+import { redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
 import { apartmentEmails } from '$lib/server/db/schema';
 
 // comma-separated ADMIN_EMAILS env var; unset → no admins
-const adminEmails = () =>
+export const adminEmails = () =>
 	(env.ADMIN_EMAILS ?? '')
 		.split(',')
 		.map((e) => e.trim().toLowerCase())
@@ -28,4 +29,10 @@ export async function isKnownEmail(email: string): Promise<boolean> {
 export async function canEdit(email: string, apartmentNumber: number): Promise<boolean> {
 	if (isAdmin(email)) return true;
 	return (await apartmentNumbersForEmail(email)).includes(apartmentNumber);
+}
+
+// logged-out visitors go to the login page and come back here afterwards
+export function requireUser(locals: App.Locals, url: URL) {
+	if (!locals.user) redirect(302, `/login?next=${encodeURIComponent(url.pathname)}`);
+	return locals.user;
 }

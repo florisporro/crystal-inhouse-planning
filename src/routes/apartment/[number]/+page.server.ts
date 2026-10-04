@@ -3,9 +3,11 @@ import { asc, eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { activities, apartments } from '$lib/server/db/schema';
 import { displayStatus } from '$lib/viz';
-import { canEdit } from '$lib/server/access';
+import { canEdit, requireUser } from '$lib/server/access';
 
-export const load = async ({ locals, params }) => {
+export const load = async ({ locals, params, url }) => {
+	// per-apartment activity history; numbers are only shown to residents
+	requireUser(locals, url);
 	const number = Number(params.number);
 	if (!Number.isInteger(number) || number < 1 || number > 179) error(404, 'No such apartment');
 	const [apt] = await db.select().from(apartments).where(eq(apartments.number, number));
@@ -29,7 +31,7 @@ export const load = async ({ locals, params }) => {
 		floor: apt.floor,
 		status: displayStatus(apt),
 		plannedMoveDate: apt.plannedMoveDate,
-		editable: locals.user ? await canEdit(locals.user.email, apt.number) : false,
+		editable: await canEdit(locals.user!.email, apt.number),
 		acts
 	};
 };

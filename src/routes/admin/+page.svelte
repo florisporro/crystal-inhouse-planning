@@ -22,7 +22,10 @@
 
 <svelte:head><title>Admin — Crystal Tower</title></svelte:head>
 
-<h1 class="mb-6 text-xl font-semibold">Admin</h1>
+<div class="mb-6 flex items-baseline gap-3">
+	<h1 class="text-xl font-semibold">Admin</h1>
+	<a href="/admin/wiki" class="ml-auto text-sm hover:underline">Manage wiki</a>
+</div>
 
 <section class="card mb-8 max-w-md">
 	<h2 class="mb-1 font-medium">Indicative capacity</h2>

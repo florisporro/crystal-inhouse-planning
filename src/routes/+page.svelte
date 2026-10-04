@@ -153,9 +153,11 @@
 			<ul class="list">
 				{#each data.upcoming.filter((a) => a.date === date) as a (a)}
 					<li class="flex gap-4 px-3 py-1.5 text-sm">
-						<a href="/apartment/{a.apartmentNumber}" class="w-16 font-medium hover:underline"
-							>№ {a.apartmentNumber}</a
-						>
+						{#if a.apartmentNumber !== null}
+							<a href="/apartment/{a.apartmentNumber}" class="w-16 font-medium hover:underline"
+								>№ {a.apartmentNumber}</a
+							>
+						{/if}
 						<span class="w-16" style="color: var(--ink-2)">floor {a.floor}</span>
 						<span>{typeLabels[a.type]}</span>
 						<span style="color: var(--ink-2)">{blockLabels[a.block]}</span>

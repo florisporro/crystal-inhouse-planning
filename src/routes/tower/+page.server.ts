@@ -2,8 +2,10 @@ import { asc } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { apartments } from '$lib/server/db/schema';
 import { displayStatus } from '$lib/viz';
+import { requireUser } from '$lib/server/access';
 
-export const load = async () => {
+export const load = async ({ locals, url }) => {
+	requireUser(locals, url);
 	const apts = await db
 		.select({
 			number: apartments.number,

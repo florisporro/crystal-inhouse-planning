@@ -5,6 +5,10 @@ import { publicLoad } from '$lib/capacity';
 import { getCapacity, getCosts } from '$lib/server/capacity';
 import { displayStatus, isoDate, type DisplayStatus } from '$lib/viz';
 
+// visitors see what happens on which floor, not which apartment
+const withoutNumbers = <T extends { apartmentNumber: number }>(acts: T[], loggedIn: boolean) =>
+	acts.map((a) => ({ ...a, apartmentNumber: loggedIn ? a.apartmentNumber : null }));
+
 const pad = (n: number) => String(n).padStart(2, '0');
 
 async function actsBetween(start: string, end: string) {
@@ -22,7 +26,7 @@ async function actsBetween(start: string, end: string) {
 		.orderBy(asc(activities.date), asc(activities.block));
 }
 
-export const load = async ({ url }) => {
+export const load = async ({ locals, url }) => {
 	const apts = await db
 		.select({
 			unsold: apartments.unsold,
@@ -44,7 +48,7 @@ export const load = async ({ url }) => {
 		return {
 			...base,
 			view: 'upcoming' as const,
-			upcoming: await actsBetween(isoDate(0), isoDate(6))
+			upcoming: withoutNumbers(await actsBetween(isoDate(0), isoDate(6)), !!locals.user)
 		};
 	}
 
