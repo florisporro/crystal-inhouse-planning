@@ -4,6 +4,7 @@ import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import type { Node as PMNode } from '@tiptap/pm/model';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import { OrderedList } from '@tiptap/extension-list';
 import { CALLOUTS } from './markdown';
 
 // `:::private … :::` in markdown; residents-only section
@@ -22,8 +23,13 @@ export const PrivateBlock = Node.create({
 export const extensions = [
 	StarterKit.configure({
 		underline: false, // no markdown syntax for it
-		link: { protocols: ['wiki'], openOnClick: false, autolink: true }
+		link: { protocols: ['wiki'], openOnClick: false, autolink: true },
+		orderedList: false
 	}),
+	// tiptap's own tokenizer takes `No.` or `Mr.` at the start of a line as a list
+	// marker; marked's standard one only accepts digits
+	// @ts-expect-error null removes it; undefined would fall back to the parent's
+	OrderedList.extend({ markdownTokenizer: null }),
 	Image,
 	PrivateBlock
 ];

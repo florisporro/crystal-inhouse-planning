@@ -33,6 +33,12 @@ After.
 		expect(toBlocks(md).filter((b) => b.startsWith(':::private'))).toHaveLength(1);
 	});
 
+	it('only takes digits as ordered list markers', () => {
+		const text = 'No. The huismeester looks after the grounds.\n\nMr. Smith.\n';
+		expect(normalize(text)).toBe(text);
+		expect(normalize('3. a\n4. b\n')).toBe('3. a\n4. b\n');
+	});
+
 	it('escapes raw HTML', () => {
 		expect(normalize('<script>alert(1)</script>')).not.toContain('<script>');
 	});
