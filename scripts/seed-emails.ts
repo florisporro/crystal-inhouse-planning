@@ -6,6 +6,7 @@ import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 import { inArray, notInArray, sql } from 'drizzle-orm';
 import { apartmentEmails, apartments } from '../src/lib/server/db/schema';
+import { parseEmailCsv } from '../src/lib/server/emailLists';
 
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const db = drizzle(createClient({ url: process.env.DATABASE_URL }));
@@ -17,21 +18,7 @@ if (!existsSync(csvPath)) {
 	process.exit(0);
 }
 
-const seen = new Set<string>();
-const rows: { apartmentNumber: number; email: string }[] = [];
-for (const line of readFileSync(csvPath, 'utf8').trim().split('\n').slice(1)) {
-	const m = line.trim().match(/^(\d+)[;,](.*)$/);
-	if (!m) throw new Error(`Cannot parse line: ${line}`);
-	for (const raw of m[2].split(/[,;]/)) {
-		const email = raw.replaceAll('"', '').trim().toLowerCase();
-		if (!email) continue; // apartments without a known email are allowed
-		if (!email.includes('@')) throw new Error(`Not an email for apartment ${m[1]}: ${email}`);
-		const key = `${m[1]}|${email}`;
-		if (seen.has(key)) continue; // duplicate pair in the file
-		seen.add(key);
-		rows.push({ apartmentNumber: Number(m[1]), email });
-	}
-}
+const rows = parseEmailCsv(readFileSync(csvPath, 'utf8'));
 
 await db.delete(apartmentEmails);
 await db.insert(apartmentEmails).values(rows);

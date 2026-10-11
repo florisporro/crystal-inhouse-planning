@@ -18,6 +18,8 @@
 		{ key: 'van', label: 'Van spaces' },
 		{ key: 'elevator', label: 'Elevator use' }
 	] as const;
+
+	const apartments = (n: number) => (n === 1 ? '1 apartment' : `${n} apartments`);
 </script>
 
 <svelte:head><title>Admin — Crystal Tower</title></svelte:head>
@@ -149,6 +151,95 @@
 		{#if form?.emailError}<p class="mt-2 text-sm" style="color: var(--critical)">
 				{form.emailError}
 			</p>{/if}
+	{/if}
+</section>
+
+<section class="card mb-8 max-w-md">
+	<h2 class="mb-1 font-medium">Owner export</h2>
+	<p class="mb-3 text-sm" style="color: var(--muted)">
+		Upload the owner list from the VvE (CSV). You see the changes before anything is saved. Login
+		emails added or removed above since the previous export stay as they are.
+	</p>
+	<form
+		method="POST"
+		action="?/previewExport"
+		enctype="multipart/form-data"
+		class="flex items-center gap-3 text-sm"
+	>
+		<input type="file" name="export" accept=".csv,text/csv" required class="w-full text-sm" />
+		<button class="btn-primary px-4 py-2">Preview</button>
+	</form>
+	{#if form?.exportError}<p class="mt-2 text-sm" style="color: var(--critical)">
+			{form.exportError}
+		</p>{/if}
+	{#if form?.imported !== undefined}<p class="mt-2 text-sm" style="color: var(--status-moved)">
+			Imported. {apartments(form.imported)} changed.
+		</p>{/if}
+	{#if form?.preview}
+		{@const p = form.preview}
+		<div class="mt-4 space-y-4 text-sm">
+			{#if !p.hasBase}
+				<p style="color: var(--critical)">
+					No previous export is stored on the server, so edits made by hand cannot be recognised.
+					This export replaces the list. Check the removals.
+				</p>
+			{/if}
+			<div>
+				<h3 class="mb-1 font-medium">{apartments(p.changes.length)} change</h3>
+				{#if p.changes.length > 0}
+					<ul class="list">
+						{#each p.changes as c (c.apartment)}
+							<li class="flex gap-3 px-3 py-1.5">
+								<span class="w-8 shrink-0 tabular-nums">{c.apartment}</span>
+								<span class="break-all">
+									{#each c.added as e (e)}
+										<span class="block" style="color: var(--status-moved)">+ {e}</span>
+									{/each}
+									{#each c.removed as e (e)}
+										<span class="block" style="color: var(--critical)">− {e}</span>
+									{/each}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
+			{#if p.conflicts.length > 0}
+				<div>
+					<h3 class="mb-1 font-medium">Check these after the import</h3>
+					<p class="mb-2" style="color: var(--muted)">
+						Changed by hand and in the export, in different ways. The result keeps all addresses.
+						Remove the ones that are no longer valid.
+					</p>
+					<ul class="list">
+						{#each p.conflicts as c (c.apartment)}
+							<li class="px-3 py-1.5">
+								<a href="?emails={c.apartment}" class="font-medium hover:underline">
+									Apartment {c.apartment}
+								</a>
+								<dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 break-all">
+									<dt style="color: var(--muted)">Previous export</dt>
+									<dd>{c.previous.join(', ') || '-'}</dd>
+									<dt style="color: var(--muted)">By hand</dt>
+									<dd>{c.byHand.join(', ') || '-'}</dd>
+									<dt style="color: var(--muted)">New export</dt>
+									<dd>{c.export.join(', ') || '-'}</dd>
+									<dt style="color: var(--muted)">Result</dt>
+									<dd>{c.result.join(', ') || '-'}</dd>
+								</dl>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
+			<p>After the import: {p.addresses} addresses on {apartments(p.apartments)}.</p>
+			<form method="POST" action="?/applyExport" class="flex items-center gap-3">
+				<textarea name="export" hidden value={p.export}></textarea>
+				<input type="hidden" name="hash" value={p.hash} />
+				<button class="btn-primary px-4 py-2">Apply import</button>
+				<a href="/admin" class="hover:underline">Cancel</a>
+			</form>
+		</div>
 	{/if}
 </section>
 

@@ -5,7 +5,8 @@ import { apartmentEmails } from '$lib/server/db/schema';
 import { isAdmin } from '$lib/server/access';
 import { getCapacity, getCosts, setCapacity, setCosts } from '$lib/server/capacity';
 import { DEFAULT_COSTS, type Capacity, type Costs } from '$lib/capacity';
-import { syncEmailList } from '$lib/server/emailList';
+import { applyImport, planImport, syncEmailList } from '$lib/server/emailList';
+import { formatEmailCsv, parseEmailCsv, parseOwnerExport, type Pair } from '$lib/server/emailLists';
 
 const requireAdmin = (locals: App.Locals) => {
 	if (!locals.user) redirect(302, '/login');
@@ -100,5 +101,46 @@ export const actions = {
 			.where(and(eq(apartmentEmails.apartmentNumber, apartment), eq(apartmentEmails.email, email)));
 		await syncEmailList();
 		redirect(303, `/admin?emails=${apartment}`);
+	},
+	previewExport: async ({ locals, request }) => {
+		requireAdmin(locals);
+		const file = (await request.formData()).get('export');
+		if (!(file instanceof File) || file.size === 0) {
+			return fail(400, { exportError: 'Choose the owner export (CSV) first.' });
+		}
+		let theirs;
+		try {
+			// the VvE export is latin-1; only the ASCII apartment numbers and emails matter
+			theirs = parseOwnerExport(Buffer.from(await file.arrayBuffer()).toString('latin1'));
+		} catch (e) {
+			return fail(400, { exportError: (e as Error).message });
+		}
+		if (theirs.length === 0) {
+			return fail(400, { exportError: 'This export has no email addresses.' });
+		}
+		const { preview } = await planImport(theirs);
+		return { preview: { ...preview, export: formatEmailCsv(theirs) } };
+	},
+	applyExport: async ({ locals, request }) => {
+		requireAdmin(locals);
+		const form = await request.formData();
+		// posted back by the browser: validate again
+		let theirs: Pair[] = [];
+		try {
+			theirs = parseEmailCsv(form.get('export')?.toString() ?? '');
+		} catch {
+			// falls through to the check below
+		}
+		if (theirs.length === 0 || theirs.some((p) => !validApartment(p.apartmentNumber))) {
+			return fail(400, { exportError: 'The import data is damaged. Upload the export again.' });
+		}
+		const { merged, preview } = await planImport(theirs);
+		if (preview.hash !== form.get('hash')) {
+			return fail(409, {
+				exportError: 'The list changed after the preview. Upload the export again.'
+			});
+		}
+		await applyImport(theirs, merged);
+		return { imported: preview.changes.length };
 	}
 };

@@ -27,12 +27,12 @@ e2e/.outbox.jsonl
 # SQLite
 *.db
 
-# Real resident emails — never commit (crystal-apartments-by-floor.csv is fine)
-apartment-emails.csv
+# Real resident data (email lists, owner exports) — never commit
+/*.csv
+!/crystal-apartments-by-floor.csv
 /data
 
 # seed data, uploaded to the server manually
-activities.csv
 Crystal planner volledig.xls
 
 # wiki seed content: contains private sections, keep out of git
