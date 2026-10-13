@@ -26,7 +26,7 @@ import {
 } from '$lib/server/wiki';
 import { wikiLinks } from '$lib/wiki/markdown';
 
-const SEED: Author = { email: 'seed', name: 'Seed' };
+const SEED: Author = { email: 'seed', name: 'AI' };
 const root = process.env.WIKI_SEED_DIR || 'wiki-seed';
 if (!existsSync(root)) throw new Error(`${root} not found`);
 

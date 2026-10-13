@@ -43,6 +43,13 @@
       "when": 1791045367178,
       "tag": "0005_wiki_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791909238760,
+      "tag": "0006_ai_author",
+      "breakpoints": true
     }
   ]
 }
