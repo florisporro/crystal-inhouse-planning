@@ -98,7 +98,8 @@
 				const res = await fetch(`/gate/${id}`);
 				if (!res.ok) return; // transient; try again next tick
 				phase = (await res.json()).phase;
-				if (phase === 'failed') gateError = withHuismeester(GATE_MESSAGES.failed, data.huismeesterPhone);
+				if (phase === 'failed')
+					gateError = withHuismeester(GATE_MESSAGES.failed, data.huismeesterPhone);
 				if (phase === 'done' || phase === 'failed') stopPolling();
 			} catch {
 				// offline for a moment — keep polling until the deadline
